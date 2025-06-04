@@ -1,7 +1,6 @@
 import React, { Fragment } from "react";
 import { Bell, LogOut, ShieldCheck } from "lucide-react";
 import { Link } from "react-router-dom";
-// import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useSidebar } from "../context/SidebarContext";
 import { IoMenu } from "react-icons/io5";
 import {
