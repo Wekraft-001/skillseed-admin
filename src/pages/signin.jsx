@@ -1,5 +1,4 @@
 import React from "react";
-import { Helmet } from "react-helmet-async";
 import { Link, useNavigate } from "react-router-dom";
 import { User, Mail, Lock, Star, Rocket } from "lucide-react";
 
@@ -13,9 +12,6 @@ const Signin = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Sign In - SkillSeed</title>
-      </Helmet>
       <div className="min-h-[100vh] bg-[#F5F7FA] flex items-center justify-center p-6">
         <div
           id="signup-container"

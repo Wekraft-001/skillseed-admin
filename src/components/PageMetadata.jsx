@@ -1,11 +1,11 @@
-import { Helmet } from 'react-helmet-async';
+import React from "react";
 
-export const PageMetadata = ({ 
-  title = 'SkillSeed', 
-  description = 'Empowering learning and growth through skill development' 
+export const PageMetadata = ({
+  title = "SkillSeed",
+  description = "Empowering learning and growth through skill development",
 }) => {
   return (
-    <Helmet>
+    <>
       <title>{title}</title>
       <meta name="description" content={description} />
       <meta property="og:title" content={title} />
@@ -14,7 +14,7 @@ export const PageMetadata = ({
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
-    </Helmet>
+    </>
   );
 };
-``
+``;
