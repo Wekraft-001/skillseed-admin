@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { X, Upload, HelpCircle } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
+import { Input } from "./ui/formComponents/input";
+import { Textarea } from "./ui/formComponents/textarea";
 
 const SchoolOnboardingModal = ({ isOpen, onClose }) => {
   const [formData, setFormData] = useState({
@@ -39,7 +41,7 @@ const SchoolOnboardingModal = ({ isOpen, onClose }) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-white">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-[#0F1419]">
             School Onboarding
@@ -68,7 +70,7 @@ const SchoolOnboardingModal = ({ isOpen, onClose }) => {
                 <label className="block text-gray-700 font-medium">
                   School Name
                 </label>
-                <input
+                <Input
                   type="text"
                   name="schoolName"
                   value={formData.schoolName}
@@ -105,7 +107,7 @@ const SchoolOnboardingModal = ({ isOpen, onClose }) => {
                 <label className="block text-gray-700 font-medium">
                   Email Address
                 </label>
-                <input
+                <Input
                   type="email"
                   name="email"
                   value={formData.email}
@@ -118,7 +120,7 @@ const SchoolOnboardingModal = ({ isOpen, onClose }) => {
                 <label className="block text-gray-700 font-medium">
                   Phone Number
                 </label>
-                <input
+                <Input
                   type="tel"
                   name="phone"
                   value={formData.phone}
@@ -132,7 +134,7 @@ const SchoolOnboardingModal = ({ isOpen, onClose }) => {
             {/* Address Section */}
             <div className="space-y-2">
               <label className="block text-gray-700 font-medium">Address</label>
-              <textarea
+              <Textarea
                 name="address"
                 value={formData.address}
                 onChange={handleInputChange}
@@ -168,13 +170,13 @@ const SchoolOnboardingModal = ({ isOpen, onClose }) => {
                 type="button"
                 variant="outline"
                 onClick={handleSaveAsDraft}
-                className="rounded-full border-gray-300 hover:bg-gray-50"
+                className="rounded-full border border-gray-300 hover:bg-gray-50 p-2.5"
               >
                 Save as Draft
               </button>
               <button
                 type="submit"
-                className="rounded-full bg-[#1A73E8] text-white hover:bg-[#1A73E8]/90"
+                className="rounded-full bg-[#1A73E8] text-white hover:bg-[#1A73E8]/90 p-2.5"
               >
                 Continue to Next Step
               </button>
