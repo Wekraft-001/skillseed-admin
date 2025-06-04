@@ -10,6 +10,7 @@ import {
   MenuItem,
   Transition,
 } from "@headlessui/react";
+import Logo from "../assets/logo.svg"
 
 const Header = () => {
   const { toggleSidebar } = useSidebar();
@@ -64,19 +65,8 @@ const Header = () => {
         </button>
 
         <Link to="/" className="flex items-center">
-          <svg
-            viewBox="0 0 36 36"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="w-7 h-7 mr-2"
-          >
-            <circle cx="18" cy="18" r="18" fill="#0074D9" />
-            <path
-              d="M12 12C12 10.3431 13.3431 9 15 9H21C22.6569 9 24 10.3431 24 12V24C24 25.6569 22.6569 27 21 27H15C13.3431 27 12 25.6569 12 24V12Z"
-              fill="white"
-            />
-          </svg>
-          <span className="font-bold text-lg">SkillSeed</span>
+          <img src={Logo} className="w-16 h-16"/>
+          <span className="font-bold text-xl text-[#3C91BA]">SkillSeed</span>
         </Link>
       </div>
 
