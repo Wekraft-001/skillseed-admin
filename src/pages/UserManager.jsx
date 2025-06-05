@@ -66,7 +66,10 @@ const UserManagager = () => {
   };
 
   return (
-    <div className="bg-[#F5F7FA] min-h-[calc(100vh-80px)]">
+    <div className="bg-[#F5F7FA] min-h-[calc(100vh-80px)] relative">
+      <div className="absolute left-[-120px] top-12 w-56 h-56 bg-[#1A73E8]/10 rounded-full z-0"></div>
+      <div className="absolute right-[80px] top-[5px] w-40 h-40 bg-[#1A73E8]/10 rounded-full z-0"></div>
+      <div className="absolute right-[30px] bottom-[20px] w-32 h-32 bg-[#FFC107]/20 rounded-full z-0"></div>
       <div className="container mx-auto px-4 md:px-6 lg:px-8 py-8">
         {/* Header */}
         <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
@@ -82,7 +85,7 @@ const UserManagager = () => {
 
         {/* Filters */}
         <div className="bg-white p-6 rounded-2xl shadow-sm mb-8">
-          <div className="flex flex-wrap gap-4 items-center">
+          <div className="flex flex-col md:flex-row gap-4 items-center">
             <div className="flex-1">
               <div className="relative">
                 <input
@@ -95,11 +98,11 @@ const UserManagager = () => {
                 <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
               </div>
             </div>
-            <div className="flex gap-4">
+            <div className="flex gap-2 md:gap-4">
               <select
                 value={selectedRole}
                 onChange={(e) => setSelectedRole(e.target.value)}
-                className="px-4 py-2 rounded-full border border-gray-200 focus:outline-none focus:border-blue-600"
+                className="p-2 md:px-4 md:py-2 rounded-full border border-gray-200 focus:outline-none focus:border-blue-600"
               >
                 <option>All Roles</option>
                 <option>Students</option>
@@ -110,14 +113,14 @@ const UserManagager = () => {
               <select
                 value={selectedSchool}
                 onChange={(e) => setSelectedSchool(e.target.value)}
-                className="px-4 py-2 rounded-full border border-gray-200 focus:outline-none focus:border-blue-600"
+                className="md:px-4 md:py-2 rounded-full border border-gray-200 focus:outline-none focus:border-blue-600"
               >
                 <option>All Schools</option>
                 <option>School A</option>
                 <option>School B</option>
                 <option>School C</option>
               </select>
-              <button className="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-600/90 flex items-center">
+              <button className="bg-blue-600 text-white p-2 md:px-6 md:py-2 rounded-full hover:bg-blue-600/90 flex items-center">
                 <Plus className="w-4 h-4 mr-2" />
                 Add User
               </button>
@@ -206,7 +209,7 @@ const UserManagager = () => {
               </tbody>
             </table>
           </div>
-          <div className="p-6 flex justify-between items-center">
+          <div className="p-3 md:p-6 flex flex-col-reverse md:flex-row justify-between items-center gap-4">
             <p className="text-gray-500">Showing 1 to 3 of 150 entries</p>
             <div className="flex space-x-2">
               <button

@@ -12,7 +12,7 @@ import {
   HelpCircle,
 } from "lucide-react";
 import { Card } from "../components/ui/card";
-import SchoolOnboardingModal from "../components/SchoolOnboardingModal";
+import SchoolOnboardingModal from "../components/modals/SchoolOnboardingModal";
 
 const Schools = () => {
   const [viewMode, setViewMode] = useState("grid");
@@ -72,10 +72,10 @@ const Schools = () => {
     <div className="bg-[#F5F7FA] min-h-[calc(100vh-80px)] relative">
       {/* Decorative Bubbles */}
       <div className="absolute left-[-120px] top-12 w-56 h-56 bg-[#1A73E8]/10 rounded-full z-0"></div>
-      <div className="absolute right-[-100px] top-[200px] w-40 h-40 bg-[#1A73E8]/10 rounded-full z-0"></div>
-      <div className="absolute right-[-40px] bottom-[120px] w-32 h-32 bg-[#FFC107]/20 rounded-full z-0"></div>
+      <div className="absolute right-[100px] top-[20px] w-40 h-40 bg-[#1A73E8]/10 rounded-full z-0"></div>
+      <div className="absolute right-[30px] bottom-[120px] w-32 h-32 bg-[#FFC107]/20 rounded-full z-0"></div>
 
-      <div className="container mx-auto px-4 md:px-6 lg:px-8 py-8 max-w-[1800px] relative z-10">
+      <div className="container mx-auto px-4 md:px-6 lg:px-8 py-8 w-full relative z-10">
         {/* Header */}
         <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
           <div className="flex-1">
@@ -113,7 +113,7 @@ const Schools = () => {
               <List className="w-4 h-4" />
             </button>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col md:flex-row md:items-center gap-3">
             <button
               onClick={handleOpenOnboardingModal}
               className="flex items-center bg-[#FFC107] text-[#0F1419] px-6 py-3 rounded-full font-semibold hover:bg-[#FFC107]/90 cursor-pointer"
@@ -125,7 +125,7 @@ const Schools = () => {
               <input
                 type="text"
                 placeholder="Search schools..."
-                className="bg-white border border-gray-200 rounded-full px-5 py-2 focus:outline-none focus:border-[#1A73E8] w-64"
+                className="w-full bg-white border border-gray-200 rounded-full px-5 py-2 focus:outline-none focus:border-[#1A73E8]"
               />
               <Search className="absolute right-3 top-2.5 w-4 h-4 text-gray-400" />
             </div>
@@ -292,12 +292,12 @@ const Schools = () => {
         )}
 
         {/* Floating Help Button */}
-        <div className="fixed bottom-8 right-8 z-50">
+        {/* <div className="fixed bottom-8 right-8 z-50">
           <button className="flex items-center bg-[#FFC107] text-[#0F1419] p-4 rounded-full shadow-lg hover:bg-[#FFC107]/90 font-semibold text-lg">
             <HelpCircle className="w-5 h-5 mr-2" />
             Need Help?
           </button>
-        </div>
+        </div> */}
 
         {/* School Onboarding Modal */}
         <SchoolOnboardingModal

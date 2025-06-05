@@ -61,10 +61,10 @@ const Header = () => {
           onClick={toggleSidebar}
           aria-label="Toggle sidebar"
         >
-          <IoMenu size={20} />
+          <IoMenu size={30} />
         </button>
 
-        <Link to="/" className="flex items-center">
+        <Link to="/home" className="flex items-center">
           <img src={Logo} className="w-16 h-16"/>
           <span className="font-bold text-xl text-[#3C91BA]">SkillSeed</span>
         </Link>

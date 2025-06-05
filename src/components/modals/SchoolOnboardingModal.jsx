@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { X, Upload, HelpCircle } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
-import { Input } from "./ui/formComponents/input";
-import { Textarea } from "./ui/formComponents/textarea";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
+import { Input } from "../ui/formComponents/input";
+import { Textarea } from "../ui/formComponents/textarea";
 
 const SchoolOnboardingModal = ({ isOpen, onClose }) => {
   const [formData, setFormData] = useState({
