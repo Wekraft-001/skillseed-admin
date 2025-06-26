@@ -147,7 +147,7 @@ const Transactions = () => {
 
         <div
           id="stats-overview"
-          className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
+          className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"
         >
           {/* Revenue Card */}
           <div
@@ -201,7 +201,7 @@ const Transactions = () => {
             <p className="text-gray-500 text-sm">Active Subscriptions</p>
           </div>
           {/* Refunds Card */}
-          <div
+          {/* <div
             id="refunds-card"
             className="bg-white rounded-2xl p-6 shadow-lg relative overflow-hidden"
           >
@@ -214,7 +214,7 @@ const Transactions = () => {
             </div>
             <h3 className="text-2xl font-bold text-deep-navy">23</h3>
             <p className="text-gray-500 text-sm">Refunds</p>
-          </div>
+          </div> */}
         </div>
 
         <div
