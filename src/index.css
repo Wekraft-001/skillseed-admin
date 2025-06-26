@@ -7,3 +7,22 @@
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 }
+
+/* Hide scrollbar */
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* Bubble backgrounds for stat cards */
+.bubble {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(26, 115, 232, 0.08);
+  z-index: 0;
+}
+.bubble-yellow {
+  background: rgba(255, 193, 7, 0.1);
+}
+.bubble-pink {
+  background: rgba(255, 182, 193, 0.12);
+}

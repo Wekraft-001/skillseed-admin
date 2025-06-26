@@ -186,7 +186,7 @@ const SchoolOnboardingModal = ({ isOpen, onClose }) => {
                   className="rounded-xl border-gray-200 focus:border-[#1A73E8]"
                 />
               </div>
-              <div className="space-y-2">
+              {/* <div className="space-y-2">
                 <label className="block text-gray-700 font-medium">
                   Amount Paid
                 </label>
@@ -198,8 +198,8 @@ const SchoolOnboardingModal = ({ isOpen, onClose }) => {
                   placeholder="Enter Amount paid by school"
                   className="rounded-xl border-gray-200 focus:border-[#1A73E8]"
                 />
-              </div>
-              <div className="space-y-2">
+              </div> */}
+              {/* <div className="space-y-2">
                 <label className="block text-gray-700 font-medium">
                   Number of Kids
                 </label>
@@ -211,7 +211,7 @@ const SchoolOnboardingModal = ({ isOpen, onClose }) => {
                   placeholder="Enter Number of kids paid for by school"
                   className="rounded-xl border-gray-200 focus:border-[#1A73E8]"
                 />
-              </div>
+              </div> */}
             </div>
             {/* Document Upload */}
             <div className="space-y-4">

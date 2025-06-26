@@ -12,6 +12,7 @@ import Notifications from "./pages/Notifications";
 import ProgressTracking from "./pages/ProgressTrack";
 import Events from "./pages/Events";
 import Mentors from "./pages/Mentors";
+import Transactions from "./pages/Transactions";
 
 const App = () => (
   <ThemeProvider>
@@ -25,6 +26,7 @@ const App = () => (
             <Route path="challenges" element={<Challenges />} />
             <Route path="mentors" element={<Mentors />} />
             <Route path="events" element={<Events />} />
+            <Route path="transactions" element={<Transactions />} />
             <Route path="progress" element={<ProgressTracking />} />
             <Route path="notifications" element={<Notifications />} />
             <Route path="settings" element={<Settings />} />

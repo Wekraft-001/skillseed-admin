@@ -11,6 +11,7 @@ import {
   TrendingUp,
   Bell,
   Settings,
+  BarChart3,
 } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "../lib/utils";
@@ -95,6 +96,12 @@ const Sidebar = () => {
       icon: <School className="w-5 h-5 mr-2" />,
       label: "Schools",
       path: "/schools",
+    },
+
+    {
+      icon: <BarChart3 className="w-5 h-5 mr-2" />,
+      label: "Transactions",
+      path: "/transactions",
     },
     {
       icon: <Trophy className="w-5 h-5 mr-2" />,
