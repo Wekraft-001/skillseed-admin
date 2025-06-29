@@ -120,10 +120,10 @@ const UserManagager = () => {
                 <option>School B</option>
                 <option>School C</option>
               </select>
-              <button className="bg-blue-600 text-white p-2 md:px-6 md:py-2 rounded-full hover:bg-blue-600/90 flex items-center">
+              {/* <button className="bg-blue-600 text-white p-2 md:px-6 md:py-2 rounded-full hover:bg-blue-600/90 flex items-center">
                 <Plus className="w-4 h-4 mr-2" />
                 Add User
-              </button>
+              </button> */}
             </div>
           </div>
         </div>

@@ -70,7 +70,7 @@ const PaymentModal = ({ isOpen, onClose }) => {
               </svg>
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-deep-navy">
+              <h2 className="md:text-2xl font-bold text-deep-navy">
                 Add New Payment
               </h2>
               <p className="text-gray-500">
@@ -154,8 +154,8 @@ const PaymentModal = ({ isOpen, onClose }) => {
               <select className="w-full bg-soft-gray border-2 border-gray-200 rounded-2xl px-4 py-3 focus:outline-none focus:border-primary-blue transition">
                 <option value="">Select Type</option>
                 <option value="subscription">Subscription</option>
-                <option value="one-time">One-time Payment</option>
-                {/* <option value="refund">Refund</option> */}
+                <option value="one-time">Tier One</option>
+                <option value="refund">Tier Two</option>
               </select>
             </div>
             <div>
@@ -190,7 +190,7 @@ const PaymentModal = ({ isOpen, onClose }) => {
             </button>
             <button
               type="submit"
-              className="flex-1 bg-[#3C91BA] text-white px-6 py-4 rounded-2xl font-semibold flex items-center justify-center gap-2 hover:bg-primary-blue/90 transition"
+              className="flex-1 bg-[#092043] text-white px-6 py-4 rounded-2xl font-semibold flex items-center justify-center gap-2 hover:bg-primary-blue/90 transition"
             >
               {/* Plus SVG */}
               <svg

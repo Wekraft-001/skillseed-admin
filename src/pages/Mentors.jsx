@@ -190,12 +190,12 @@ const Mentors = () => {
                     >
                       <Eye className="w-4 h-4" />
                     </button>
-                    <button
+                    {/* <button
                       size="icon"
                       className="flex items-center justify-center rounded-full bg-yellow-400 text-gray-900 w-10 h-10 hover:bg-yellow-400/80"
                     >
                       <MessageSquare className="w-4 h-4" />
-                    </button>
+                    </button> */}
                   </div>
                 </div>
               ))}
@@ -271,19 +271,19 @@ const Mentors = () => {
                           </span>
                         ))}
                       </td>
-                      <td className="px-6 py-4 flex items-center gap-2">
+                      <td className="px-6 py-4 flex items-center justify-center gap-2">
                         <button
                           size="icon"
-                          className="rounded-full bg-blue-600 text-white w-8 h-8 hover:bg-blue-600/90"
+                          className="rounded-full bg-blue-600 text-white w-8 h-8 hover:bg-blue-600/90 flex items-center justify-center"
                         >
                           <Eye className="w-3 h-3" />
                         </button>
-                        <button
+                        {/* <button
                           size="icon"
                           className="rounded-full bg-yellow-400 text-gray-900 w-8 h-8 hover:bg-yellow-400/80"
                         >
                           <MessageSquare className="w-3 h-3" />
-                        </button>
+                        </button> */}
                       </td>
                     </tr>
                   ))}

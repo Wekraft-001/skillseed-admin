@@ -128,7 +128,7 @@ const Transactions = () => {
           <div className="flex items-center space-x-4">
             <button
               onClick={() => setShowPaymentModal(true)}
-              className="text-white p-2 md:px-6 md:py-3 rounded-full font-medium text-sm md:text-base md:font-semibold flex items-center gap-2 bg-[#3C91BA] transition"
+              className="text-white p-2 md:px-6 md:py-3 rounded-full font-medium text-sm md:text-base md:font-semibold flex items-center gap-2 bg-[#092043] transition"
             >
               <svg
                 className="svg-inline--fa fa-plus"

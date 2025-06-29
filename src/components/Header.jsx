@@ -66,7 +66,7 @@ const Header = () => {
 
         <Link to="/home" className="flex items-center">
           <img src={Logo} className="w-16 h-16"/>
-          <span className="font-bold text-xl text-[#3C91BA]">SkillSeed</span>
+          <span className="font-bold md:text-3xl text-[#092043]">SkillSeed</span>
         </Link>
       </div>
 
@@ -93,15 +93,15 @@ const Header = () => {
             leaveFrom="transform opacity-100 scale-100"
             leaveTo="transform opacity-0 scale-95"
           >
-            <MenuItems className="absolute right-0 z-50 mt-2 w-[320px] origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none font-primaryRegular">
+            <MenuItems className="absolute right-0 z-50 mt-2 w-[320px] origin-top-right rounded-md bg-white py-1 shadow-lg focus:outline-none font-primaryRegular">
               <MenuItem>
-                <div className="p-4 pb-2 flex justify-between items-center border-b">
-                  <h3 className="text-xl font-bold">Notifications</h3>
+                <div className="p-4 pb-2 flex justify-between items-center border-b border-b-gray-100">
+                  <h3 className="md:text-xl font-bold">Notifications</h3>
                 </div>
               </MenuItem>
               <hr />
-              <MenuItem>
-                <div className="flex p-2 gap-2 border-b">
+              {/* <MenuItem>
+                <div className="flex p-2 gap-2">
                   <div className="bg-gray-100 text-black px-4 py-1 rounded-full text-sm font-medium">
                     All
                   </div>
@@ -109,7 +109,7 @@ const Header = () => {
                     Unread
                   </div>
                 </div>
-              </MenuItem>
+              </MenuItem> */}
               <MenuItem>
                 <div className="bg-blue-50 flex items-center p-4 gap-4">
                   <div className="bg-white p-2 rounded-full">
@@ -172,7 +172,7 @@ const Header = () => {
           <div>
             <MenuButton className="flex rounded-full text-sm focus:outline-none">
               <span className="sr-only">Open user menu</span>
-              <div className="bg-[#3C91BA] w-10 h-10 text-lg font-semibold text-white text-center p-2 rounded-full mx-4 my-2 flex items-center justify-center">
+              <div className="bg-[#092043] w-10 h-10 text-lg font-semibold text-white text-center p-2 rounded-full mx-4 my-2 flex items-center justify-center">
                 SS
               </div>
             </MenuButton>

@@ -163,17 +163,6 @@ const SchoolOnboardingModal = ({ isOpen, onClose }) => {
                 />
               </div>
               <div className="space-y-2">
-                <label className="block text-gray-700 font-medium">City</label>
-                <Input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  placeholder="Enter City"
-                  className="rounded-xl border-gray-200 focus:border-[#1A73E8]"
-                />
-              </div>
-              <div className="space-y-2">
                 <label className="block text-gray-700 font-medium">
                   Country
                 </label>
@@ -246,7 +235,7 @@ const SchoolOnboardingModal = ({ isOpen, onClose }) => {
               </button> */}
               <button
                 type="submit"
-                className="rounded-3xl bg-[#3C91BA] text-white font-semibold p-3"
+                className="rounded-2xl bg-[#092043] text-white font-semibold p-3"
               >
                 Submit
               </button>
