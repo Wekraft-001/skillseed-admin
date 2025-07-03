@@ -77,7 +77,7 @@ const SchoolOnboardingModal = ({ isOpen, onClose }) => {
     const url = `${apiURL}/schools/onboard`;
     const formData = new FormData();
     formData.append("schoolName", schoolName);
-    formData.append("schoolType", schoolType);
+    formData.append("schoolType", schoolType?.value);
     formData.append("schoolContactPerson", schoolContactPerson);
     formData.append("email", email);
     formData.append("phoneNumber", phoneNumber);
