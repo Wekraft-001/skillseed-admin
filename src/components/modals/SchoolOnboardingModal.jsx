@@ -114,6 +114,7 @@ const SchoolOnboardingModal = ({ isOpen, onClose }) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
+      <ToastContainer />
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-white no-scrollbar">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-[#0F1419]">
