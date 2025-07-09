@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Search, Plus, Edit, Trash2 } from "lucide-react";
+import SkeletonCard from "../components/LoadingSkeleton";
 
 const UserManagager = () => {
   const apiURL = import.meta.env.VITE_REACT_APP_BASE_URL;
   const token = localStorage.getItem("adminToken");
+  const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState([]);
   const [selectedRole, setSelectedRole] = useState("All Roles");
   const [selectedSchool, setSelectedSchool] = useState("All Schools");
@@ -73,6 +75,7 @@ const UserManagager = () => {
 
   useEffect(() => {
     const getUsers = () => {
+      setLoading(true);
       axios
         .get(`${apiURL}/users/all`, {
           headers: {
@@ -83,9 +86,11 @@ const UserManagager = () => {
         .then((response) => {
           // console.log(response.data, "Users");
           setUsers(response.data);
+          setLoading(false);
         })
         .catch((error) => {
           console.error("Error fetching vendors:", error);
+          setLoading(false);
         });
     };
 
@@ -187,37 +192,47 @@ const UserManagager = () => {
                 </tr>
               </thead>
               <tbody>
-                {currentUsers.map((user) => (
-                  <tr
-                    key={user.id}
-                    className="border-b border-gray-100 hover:bg-gray-50"
-                  >
-                    <td className="px-6 py-4">
-                      <div className="flex items-center space-x-3">
-                        <img
-                          src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-4.jpg"
-                          className="w-10 h-10 rounded-full object-cover"
-                          alt={user.name}
-                        />
-                        <div>
-                          <p className="font-medium text-[#0F1419]">
-                            {user.firstName + " " + user.lastName}
-                          </p>
-                          <p className="text-sm text-gray-500">{user.email}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={`px-3 py-1 rounded-full text-sm font-medium ${getRoleBadgeColor(
-                          user.role
-                        )}`}
+                {loading ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
+                    {Array.from({ length: 6 }).map((_, i) => (
+                      <SkeletonCard key={i} />
+                    ))}
+                  </div>
+                ) : (
+                  <>
+                    {currentUsers.map((user) => (
+                      <tr
+                        key={user.id}
+                        className="border-b border-gray-100 hover:bg-gray-50"
                       >
-                        {user.role}
-                      </span>
-                    </td>
-                    {/* <td className="px-6 py-4 text-gray-700">{user.school}</td> */}
-                    {/* <td className="px-6 py-4">
+                        <td className="px-6 py-4">
+                          <div className="flex items-center space-x-3">
+                            <img
+                              src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-4.jpg"
+                              className="w-10 h-10 rounded-full object-cover"
+                              alt={user.name}
+                            />
+                            <div>
+                              <p className="font-medium text-[#0F1419]">
+                                {user.firstName + " " + user.lastName}
+                              </p>
+                              <p className="text-sm text-gray-500">
+                                {user.email}
+                              </p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span
+                            className={`px-3 py-1 rounded-full text-sm font-medium ${getRoleBadgeColor(
+                              user.role
+                            )}`}
+                          >
+                            {user.role}
+                          </span>
+                        </td>
+                        {/* <td className="px-6 py-4 text-gray-700">{user.school}</td> */}
+                        {/* <td className="px-6 py-4">
                       <span
                         className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusBadgeColor(
                           user.status
@@ -226,18 +241,20 @@ const UserManagager = () => {
                         {user.status}
                       </span>
                     </td> */}
-                    <td className="px-6 py-4">
-                      <div className="flex space-x-2">
-                        <button className="text-blue-600 hover:text-[#0F1419] p-1">
-                          <Edit className="w-4 h-4" />
-                        </button>
-                        <button className="text-red-500 hover:text-red-700 p-1">
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                        <td className="px-6 py-4">
+                          <div className="flex space-x-2">
+                            <button className="text-blue-600 hover:text-[#0F1419] p-1">
+                              <Edit className="w-4 h-4" />
+                            </button>
+                            <button className="text-red-500 hover:text-red-700 p-1">
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </>
+                )}
               </tbody>
             </table>
           </div>

@@ -13,6 +13,7 @@ import ProgressTracking from "./pages/ProgressTrack";
 import Events from "./pages/Events";
 import Mentors from "./pages/Mentors";
 import Transactions from "./pages/Transactions";
+import 'react-loading-skeleton/dist/skeleton.css';
 
 const App = () => (
   <ThemeProvider>
