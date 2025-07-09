@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import {
   Plus,
   Search,
@@ -15,10 +16,15 @@ import { Card } from "../components/ui/card";
 import SchoolOnboardingModal from "../components/modals/SchoolOnboardingModal";
 
 const Schools = () => {
+  const apiURL = import.meta.env.VITE_REACT_APP_BASE_URL;
+  const token = localStorage.getItem("adminToken");
   const [viewMode, setViewMode] = useState("grid");
   const [isOnboardingModalOpen, setIsOnboardingModalOpen] = useState(false);
+  const [schools, setSchools] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
 
-  const schools = [
+  const schools1 = [
     {
       id: 1,
       name: "Bright Future Academy",
@@ -68,6 +74,45 @@ const Schools = () => {
     setIsOnboardingModalOpen(false);
   };
 
+  const getSchoolTypeColor = (schoolType) => {
+    switch (schoolType) {
+      case "Primary":
+        return "bg-[#FFC107]/90 text-[#0F1419]";
+      case "Secondary":
+        return "bg-[#1A73E8]/90 text-white";
+      case "Combined":
+        return "bg-[#FFC107]/90 text-[#0F1419]";
+      default:
+        return "bg-gray-100 text-gray-600";
+    }
+  };
+
+  useEffect(() => {
+    const getSchools = () => {
+      axios
+        .get(`${apiURL}/schools/all`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-type": "application/json; charset=UTF-8",
+          },
+        })
+        .then((response) => {
+          // console.log(response.data, "Schools");
+          setSchools(response.data);
+        })
+        .catch((error) => {
+          console.error("Error fetching vendors:", error);
+        });
+    };
+
+    getSchools();
+  }, []);
+
+  // Calculate pagination
+  const indexOfLastUser = currentPage * itemsPerPage;
+  const indexOfFirstUser = indexOfLastUser - itemsPerPage;
+  const currentSchools = schools.slice(indexOfFirstUser, indexOfLastUser);
+  const totalPages = Math.ceil(schools.length / itemsPerPage);
   return (
     <div className="bg-[#F5F7FA] min-h-[calc(100vh-80px)] relative">
       {/* Decorative Bubbles */}
@@ -75,9 +120,9 @@ const Schools = () => {
       <div className="absolute right-[100px] top-[20px] w-40 h-40 bg-[#1A73E8]/10 rounded-full z-0"></div>
       <div className="absolute right-[30px] bottom-[120px] w-32 h-32 bg-[#FFC107]/20 rounded-full z-0"></div>
 
-      <div className="container mx-auto px-4 md:px-6 lg:px-8 py-8 w-full relative z-10">
+      <div className="container mx-auto px-4 md:px-6 lg:px-8 py-4 w-full relative z-10">
         {/* Header */}
-        <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+        <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
           <div className="flex-1">
             <h1 className="text-2xl md:text-3xl font-bold text-[#0F1419]">
               Schools
@@ -135,52 +180,55 @@ const Schools = () => {
         {/* Schools Content */}
         {viewMode === "grid" ? (
           // Grid View
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
-            {schools.map((school) => (
-              <Card
-                key={school.id}
-                className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 relative"
-              >
-                <div className="flex items-stretch justify-between">
-                  <div className="flex gap-4 mb-4">
-                    <img
-                      src={school.image}
-                      className="w-14 h-14 rounded-full border-4 border-[#1A73E8] ring-2 ring-[#FFC107] object-cover shadow-md bg-white"
-                      alt={school.name}
-                    />
-                    <div>
-                      <h2 className="text-sm 2xl:text-xl font-semibold text-[#0F1419]">
-                        {school.name}
-                      </h2>
-                      <div className="flex items-center gap-2">
-                        <MapPin className="w-4 h-4 text-[#1A73E8]" />
-                        <span className="text-gray-500 text-sm">
-                          {school.location}
-                        </span>
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
+              {currentSchools.map((school) => (
+                <Card
+                  key={school.id}
+                  className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 relative"
+                >
+                  <div className="flex items-stretch justify-between">
+                    <div className="flex gap-4 mb-4">
+                      <img
+                        src={school.logoUrl}
+                        className="w-14 h-14 rounded-full border-4 border-[#1A73E8] ring-2 ring-[#FFC107] object-cover shadow-md bg-white"
+                        alt={school.schoolName}
+                      />
+                      <div>
+                        <h2 className="text-sm 2xl:text-xl font-semibold text-[#0F1419]">
+                          {school.schoolName}
+                        </h2>
+                        <div className="flex items-center gap-2">
+                          <MapPin className="w-4 h-4 text-[#1A73E8]" />
+                          <span className="text-gray-500 text-sm">
+                            {school.city + ", " + school.country}
+                          </span>
+                        </div>
                       </div>
                     </div>
+                    <div className="">
+                      <span
+                        className={`text-xs px-3 py-1 rounded-full font-semibold ${getSchoolTypeColor(
+                          school.schoolType
+                        )}`}
+                      >
+                        {school.schoolType}
+                      </span>
+                    </div>
                   </div>
-                  <div className="">
-                    <span
-                      className={`text-xs px-3 py-1 rounded-full font-semibold ${school.typeColor}`}
-                    >
-                      {school.type}
-                    </span>
-                  </div>
-                </div>
 
-                <div className="flex gap-3 text-gray-600 text-sm mb-4">
-                  <div className="flex items-center gap-1">
-                    <Users className="w-4 h-4 text-[#FFC107]" />
-                    <span>{school.students} Students</span>
-                  </div>
-                  <div className="flex items-center gap-1">
+                  <div className="flex gap-3 text-gray-600 text-sm mb-4">
+                    <div className="flex items-center gap-1">
+                      <Users className="w-4 h-4 text-[#FFC107]" />
+                      <span>{school.students} Students</span>
+                    </div>
+                    {/* <div className="flex items-center gap-1">
                     <User className="w-4 h-4 text-[#1A73E8]" />
                     <span>{school.teachers} Teachers</span>
+                  </div> */}
                   </div>
-                </div>
-                <div className="flex gap-2 flex-wrap mb-4">
-                  {school.clubs.map((club, index) => (
+                  {/* <div className="flex gap-2 flex-wrap mb-4">
+                  {school?.clubs.map((club, index) => (
                     <span
                       key={index}
                       className={`px-3 py-1 rounded-full text-xs font-medium ${
@@ -192,18 +240,60 @@ const Schools = () => {
                       {club}
                     </span>
                   ))}
-                </div>
-                <div className="flex items-center gap-3">
-                  <button className="flex items-center justify-center rounded-full bg-[#1A73E8] text-white w-10 h-10 hover:bg-[#1A73E8]/90">
-                    <Eye className="w-4 h-4" />
+                </div> */}
+                  <div className="flex items-center gap-3">
+                    <button className="flex items-center justify-center rounded-full bg-[#1A73E8] text-white w-10 h-10 hover:bg-[#1A73E8]/90">
+                      <Eye className="w-4 h-4" />
+                    </button>
+                    <button className="flex items-center justify-center rounded-full bg-[#FFC107] text-[#0F1419] w-10 h-10 hover:bg-[#FFC107]/80">
+                      <Pen className="w-4 h-4" />
+                    </button>
+                  </div>
+                </Card>
+              ))}
+            </div>
+            {/* Grid Pagination Controls */}
+            <div className="mt-6 flex flex-col md:flex-row justify-between items-center gap-4">
+              <p className="text-gray-500">
+                Showing {indexOfFirstUser + 1} to{" "}
+                {Math.min(indexOfLastUser, schools.length)} of {schools.length}{" "}
+                entries
+              </p>
+              <div className="flex space-x-2">
+                <button
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                  }
+                  className="px-4 py-2 rounded-full border border-gray-200 hover:bg-blue-600 hover:text-white"
+                  disabled={currentPage === 1}
+                >
+                  Previous
+                </button>
+                {Array.from({ length: totalPages }, (_, i) => (
+                  <button
+                    key={i + 1}
+                    onClick={() => setCurrentPage(i + 1)}
+                    className={`px-4 py-2 rounded-full border ${
+                      currentPage === i + 1
+                        ? "bg-blue-600 text-white"
+                        : "border-gray-200 hover:bg-blue-600 hover:text-white"
+                    }`}
+                  >
+                    {i + 1}
                   </button>
-                  <button className="flex items-center justify-center rounded-full bg-[#FFC107] text-[#0F1419] w-10 h-10 hover:bg-[#FFC107]/80">
-                    <Pen className="w-4 h-4" />
-                  </button>
-                </div>
-              </Card>
-            ))}
-          </div>
+                ))}
+                <button
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                  }
+                  className="px-4 py-2 rounded-full border border-gray-200 hover:bg-blue-600 hover:text-white"
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          </>
         ) : (
           // List View
           <Card className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-x-auto">
@@ -214,13 +304,13 @@ const Schools = () => {
                   <th className="px-6 py-4">Location</th>
                   <th className="px-6 py-4">Type</th>
                   <th className="px-6 py-4">Students</th>
-                  <th className="px-6 py-4">Teachers</th>
-                  <th className="px-6 py-4">Clubs</th>
+                  {/* <th className="px-6 py-4">Teachers</th> */}
+                  {/* <th className="px-6 py-4">Clubs</th> */}
                   <th className="px-6 py-4 rounded-tr-2xl">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {schools.map((school) => (
+                {currentSchools.map((school) => (
                   <tr
                     key={school.id}
                     className="border-t border-gray-100 hover:bg-[#1A73E8]/5 transition"
@@ -228,13 +318,13 @@ const Schools = () => {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <img
-                          src={school.image}
+                          src={school.logoUrl}
                           className="w-10 h-10 rounded-full border-2 border-[#1A73E8] object-cover"
-                          alt={school.name}
+                          alt={school.schoolName}
                         />
                         <div>
                           <div className="font-semibold text-[#0F1419]">
-                            {school.name}
+                            {school.schoolName}
                           </div>
                           <div className="text-xs text-gray-400">
                             {school.email}
@@ -243,22 +333,24 @@ const Schools = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 text-gray-500">
-                      {school.location}
+                      {school.city + ", " + school.country}
                     </td>
                     <td className="px-6 py-4">
                       <span
-                        className={`text-xs px-3 py-1 rounded-full font-semibold ${school.typeColor}`}
+                        className={`text-xs px-3 py-1 rounded-full font-semibold ${getSchoolTypeColor(
+                          school.schoolType
+                        )}`}
                       >
-                        {school.type}
+                        {school.schoolType}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-gray-700">
                       {school.students}
                     </td>
-                    <td className="px-6 py-4 text-gray-700">
+                    {/* <td className="px-6 py-4 text-gray-700">
                       {school.teachers}
-                    </td>
-                    <td className="px-6 py-4">
+                    </td> */}
+                    {/* <td className="px-6 py-4">
                       <div className="flex flex-wrap gap-1">
                         {school.clubs.map((club, index) => (
                           <span
@@ -273,7 +365,7 @@ const Schools = () => {
                           </span>
                         ))}
                       </div>
-                    </td>
+                    </td> */}
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <button className="flex items-center justify-center rounded-full bg-[#1A73E8] text-white w-8 h-8 hover:bg-[#1A73E8]/90">
@@ -288,6 +380,47 @@ const Schools = () => {
                 ))}
               </tbody>
             </table>
+            <div className="p-3 md:p-6 flex flex-col-reverse md:flex-row justify-between items-center gap-4">
+              <p className="text-gray-500">
+                {" "}
+                Showing {indexOfFirstUser + 1} to{" "}
+                {Math.min(indexOfLastUser, schools.length)} of {schools.length}{" "}
+                entries
+              </p>
+              <div className="flex space-x-2">
+                <button
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                  }
+                  className="px-4 py-2 rounded-full border border-gray-200 hover:bg-blue-600 hover:text-white"
+                  disabled={currentPage === 1}
+                >
+                  Previous
+                </button>
+                {Array.from({ length: totalPages }, (_, i) => (
+                  <button
+                    key={i + 1}
+                    onClick={() => setCurrentPage(i + 1)}
+                    className={`px-4 py-2 rounded-full border ${
+                      currentPage === i + 1
+                        ? "bg-blue-600 text-white"
+                        : "border-gray-200 hover:bg-blue-600 hover:text-white"
+                    }`}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+                <button
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                  }
+                  className="px-4 py-2 rounded-full border border-gray-200 hover:bg-blue-600 hover:text-white"
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
           </Card>
         )}
 

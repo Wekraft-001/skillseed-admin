@@ -4,11 +4,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { User, Mail, Lock, Star, Rocket } from "lucide-react";
 import { IoIosEye, IoIosEyeOff } from "react-icons/io";
+import { useAuth } from "../context/AuthContext";
 
 const Signin = () => {
   const apiURL = import.meta.env.VITE_REACT_APP_BASE_URL;
   const navigate = useNavigate();
   const { handleSubmit } = useForm();
+  const { login, errorMessage } = useAuth();
 
   const initialValues = {
     email: "",
@@ -18,8 +20,6 @@ const Signin = () => {
   const [loginDetails, setLoginDetails] = useState(initialValues);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(null);
-
   const { email, password } = loginDetails;
 
   const handleChange = (e) => {
@@ -29,20 +29,9 @@ const Signin = () => {
 
   const onSubmit = async () => {
     setLoading(true);
-    setErrorMessage(null);
-    const url = `${apiURL}/auth/signin`;
-    try {
-      const response = await axios.post(url, loginDetails);
-      console.log(response, "response");
-      let accessToken = response.data.access_token;
-      localStorage.setItem("adminToken", accessToken);
-      navigate("/home");
-    } catch (error) {
-      console.error("Error in API call:", error);
-      setErrorMessage("Login failed. Please check your credentials.");
-    } finally {
-      setLoading(false);
-    }
+    const success = await login(loginDetails.email, loginDetails.password);
+    setLoading(false);
+    if (success) navigate("/home");
   };
 
   const togglePasswordVisibility = () => {

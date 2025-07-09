@@ -18,6 +18,7 @@ const SchoolOnboardingModal = ({ isOpen, onClose }) => {
   const apiURL = import.meta.env.VITE_REACT_APP_BASE_URL;
   const token = localStorage.getItem("adminToken");
   const { handleSubmit } = useForm();
+
   const [showPreview, setPreview] = useState(false);
   const [logo, setLogo] = useState(null);
   const [logoPreview, setLogoPreview] = useState(null);
@@ -63,6 +64,10 @@ const SchoolOnboardingModal = ({ isOpen, onClose }) => {
     const file = e.target.files[0];
     if (!file) return;
 
+    if (file.size > 2 * 1024 * 1024) {
+      alert("Image too large. Max size is 2MB.");
+      return;
+    }
     setLogo(file); // ✅ this is the file we’ll append to formData
 
     const reader = new FileReader();
@@ -73,6 +78,16 @@ const SchoolOnboardingModal = ({ isOpen, onClose }) => {
   };
 
   const handleAddSchool = () => {
+    if (!schoolType) {
+      alert("School type is required");
+      return;
+    }
+
+    if (!logo) {
+      alert("School logo is required");
+      return;
+    }
+
     setLoading(true);
     const url = `${apiURL}/schools/onboard`;
     const formData = new FormData();
@@ -85,31 +100,33 @@ const SchoolOnboardingModal = ({ isOpen, onClose }) => {
     formData.append("city", city);
     formData.append("country", country);
     formData.append("logo", logo);
-    setTimeout(() => {
-      setLoading(false);
-      axios
-        .post(url, formData, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        .then((response) => {
-          console.log(response, "response from adding products");
-          if (response.status === 201) {
-            toast.success("School Successfully Added");
-            setLogoPreview(true);
-            setFormData(initialValue);
-            setLogo(null);
-          }
-        })
-        .catch((error) => {
-          console.error("Error uploading product:", error);
-        })
 
-        .finally(() => {
-          setLoading(false);
-        });
-    }, 2000);
+    setLoading(false);
+    axios
+      .post(url, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        console.log(response, "response from adding products");
+        if (response.status === 201) {
+          toast.success("School Successfully Added");
+          setFormData(initialValue);
+          setLogoPreview(null);
+          setLogo(null);
+          onClose();
+        }
+      })
+      .catch((error) => {
+        const message =
+          error?.response?.data?.message || "Something went wrong";
+        alert(message);
+      })
+
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (
@@ -138,6 +155,7 @@ const SchoolOnboardingModal = ({ isOpen, onClose }) => {
                   onChange={handleInputChange}
                   placeholder="Enter school name"
                   className="rounded-xl border-gray-200 focus:border-[#1A73E8]"
+                  required
                 />
               </div>
               <div className="space-y-2">
@@ -164,6 +182,7 @@ const SchoolOnboardingModal = ({ isOpen, onClose }) => {
                   onChange={handleInputChange}
                   placeholder="Enter full name of contact person"
                   className="rounded-xl border-gray-200 focus:border-[#1A73E8]"
+                  required
                 />
               </div>
               <div className="space-y-2">
@@ -177,6 +196,7 @@ const SchoolOnboardingModal = ({ isOpen, onClose }) => {
                   onChange={handleInputChange}
                   placeholder="school@example.com"
                   className="rounded-xl border-gray-200 focus:border-[#1A73E8]"
+                  required
                 />
               </div>
               <div className="space-y-2">
@@ -190,6 +210,7 @@ const SchoolOnboardingModal = ({ isOpen, onClose }) => {
                   onChange={handleInputChange}
                   placeholder="Enter phone number"
                   className="rounded-xl border-gray-200 focus:border-[#1A73E8]"
+                  required
                 />
               </div>
               <div className="space-y-2">
@@ -197,11 +218,13 @@ const SchoolOnboardingModal = ({ isOpen, onClose }) => {
                   Address
                 </label>
                 <Input
+                  type="text"
                   name="address"
                   value={address}
                   onChange={handleInputChange}
                   placeholder="Enter school address"
                   className="rounded-xl border-gray-200 focus:border-[#1A73E8]"
+                  required
                 />
               </div>
               <div className="space-y-2">
@@ -213,6 +236,7 @@ const SchoolOnboardingModal = ({ isOpen, onClose }) => {
                   onChange={handleInputChange}
                   placeholder="Enter City"
                   className="rounded-xl border-gray-200 focus:border-[#1A73E8]"
+                  required
                 />
               </div>
               <div className="space-y-2">
@@ -226,6 +250,7 @@ const SchoolOnboardingModal = ({ isOpen, onClose }) => {
                   onChange={handleInputChange}
                   placeholder="Enter Country"
                   className="rounded-xl border-gray-200 focus:border-[#1A73E8]"
+                  required
                 />
               </div>
             </div>

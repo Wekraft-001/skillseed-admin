@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { PageMetadata } from "../components/PageMetadata";
+import axios from "axios";
 import { Card } from "../components/ui/card";
 import {
   School,
@@ -25,6 +26,9 @@ import {
 } from "recharts";
 
 const Home = () => {
+  const apiURL = import.meta.env.VITE_REACT_APP_BASE_URL;
+  const token = localStorage.getItem("adminToken");
+  
   const engagementData = [
     { name: "Jan", engagement: 65, signups: 30 },
     { name: "Feb", engagement: 59, signups: 45 },
@@ -34,6 +38,44 @@ const Home = () => {
     { name: "Jun", engagement: 75, signups: 65 },
     { name: "Jul", engagement: 70, signups: 80 },
   ];
+
+  // useEffect(() => {
+  //   const getPendingOrders = () => {
+  //     axios
+  //       .get(`${apiURL}/vendors-dashboard/my-orders?filter.status=PENDING`, {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //           "Content-type": "application/json; charset=UTF-8",
+  //         },
+  //       })
+  //       .then((response) => {
+  //         console.log(response.data.data.orders, "data on dashboard");
+  //         setRecentOrders(response.data.data.orders);
+  //       })
+  //       .catch((error) => {
+  //         console.error("Error fetching vendors:", error);
+  //       });
+  //   };
+  //   const getTotalSales = () => {
+  //     axios
+  //       .get(`${apiURL}/vendors-dashboard/total-sales`, {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //           "Content-type": "application/json; charset=UTF-8",
+  //         },
+  //       })
+  //       .then((response) => {
+  //         console.log(response.data);
+  //         const formattedTotalSales = response.data.data.toLocaleString();
+  //         setTotalSales(formattedTotalSales);
+  //       })
+  //       .catch((error) => {
+  //         console.error("Error fetching vendors:", error);
+  //       });
+  //   };
+  //   getTotalSales();
+  //   getPendingOrders();
+  // }, []);
   return (
     <>
       <PageMetadata
