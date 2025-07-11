@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { Card } from "../components/ui/card";
 import SchoolOnboardingModal from "../components/modals/SchoolOnboardingModal";
-import SkeletonCard from "../components/LoadingSkeleton";
+import { SkeletonCard } from "../components/LoadingSkeleton";
 
 const Schools = () => {
   const apiURL = import.meta.env.VITE_REACT_APP_BASE_URL;
@@ -100,7 +100,7 @@ const Schools = () => {
           },
         })
         .then((response) => {
-          // console.log(response.data, "Schools");
+          console.log(response.data, "Schools");
           setSchools(response.data);
           setLoading(false);
         })
@@ -233,7 +233,7 @@ const Schools = () => {
                       <div className="flex gap-3 text-gray-600 text-sm mb-4">
                         <div className="flex items-center gap-1">
                           <Users className="w-4 h-4 text-[#FFC107]" />
-                          <span>{school.students} Students</span>
+                          <span>{school?.students?.length} Student(s)</span>
                         </div>
                         {/* <div className="flex items-center gap-1">
                     <User className="w-4 h-4 text-[#1A73E8]" />
@@ -358,7 +358,7 @@ const Schools = () => {
                           </span>
                         </td>
                         <td className="px-6 py-4 text-gray-700">
-                          {school.students}
+                          {school?.students?.length}
                         </td>
                         {/* <td className="px-6 py-4 text-gray-700">
                       {school.teachers}

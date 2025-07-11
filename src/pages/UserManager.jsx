@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Search, Plus, Edit, Trash2 } from "lucide-react";
-import SkeletonCard from "../components/LoadingSkeleton";
+import { SkeletonList } from "../components/LoadingSkeleton";
 
 const UserManagager = () => {
   const apiURL = import.meta.env.VITE_REACT_APP_BASE_URL;
@@ -195,7 +195,7 @@ const UserManagager = () => {
                 {loading ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
                     {Array.from({ length: 6 }).map((_, i) => (
-                      <SkeletonCard key={i} />
+                      <SkeletonList key={i} />
                     ))}
                   </div>
                 ) : (

@@ -28,7 +28,9 @@ import {
 const Home = () => {
   const apiURL = import.meta.env.VITE_REACT_APP_BASE_URL;
   const token = localStorage.getItem("adminToken");
-  
+  const [loading, setLoading] = useState(false);
+  const [dashboardData, setDashboardData] = useState({});
+
   const engagementData = [
     { name: "Jan", engagement: 65, signups: 30 },
     { name: "Feb", engagement: 59, signups: 45 },
@@ -39,43 +41,26 @@ const Home = () => {
     { name: "Jul", engagement: 70, signups: 80 },
   ];
 
-  // useEffect(() => {
-  //   const getPendingOrders = () => {
-  //     axios
-  //       .get(`${apiURL}/vendors-dashboard/my-orders?filter.status=PENDING`, {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //           "Content-type": "application/json; charset=UTF-8",
-  //         },
-  //       })
-  //       .then((response) => {
-  //         console.log(response.data.data.orders, "data on dashboard");
-  //         setRecentOrders(response.data.data.orders);
-  //       })
-  //       .catch((error) => {
-  //         console.error("Error fetching vendors:", error);
-  //       });
-  //   };
-  //   const getTotalSales = () => {
-  //     axios
-  //       .get(`${apiURL}/vendors-dashboard/total-sales`, {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //           "Content-type": "application/json; charset=UTF-8",
-  //         },
-  //       })
-  //       .then((response) => {
-  //         console.log(response.data);
-  //         const formattedTotalSales = response.data.data.toLocaleString();
-  //         setTotalSales(formattedTotalSales);
-  //       })
-  //       .catch((error) => {
-  //         console.error("Error fetching vendors:", error);
-  //       });
-  //   };
-  //   getTotalSales();
-  //   getPendingOrders();
-  // }, []);
+  useEffect(() => {
+    const getDashboardData = () => {
+      axios
+        .get(`${apiURL}/dashboard/get-data`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-type": "application/json; charset=UTF-8",
+          },
+        })
+        .then((response) => {
+          // console.log(response.data, "data on dashboard");
+          setDashboardData(response.data.dashboardResponse);
+        })
+        .catch((error) => {
+          console.error("Error fetching vendors:", error);
+        });
+    };
+
+    getDashboardData();
+  }, []);
   return (
     <>
       <PageMetadata
@@ -111,7 +96,7 @@ const Home = () => {
                     Total Schools
                   </p>
                   <h3 className="text-2xl md:text-3xl font-bold text-[#0F1419]">
-                    245
+                    {dashboardData?.analytics?.totalSchools}
                   </h3>
                 </div>
                 <div className="bg-[#1A73E8]/10 p-3 md:p-4 rounded-full">
@@ -130,7 +115,7 @@ const Home = () => {
                     Total Students
                   </p>
                   <h3 className="text-2xl md:text-3xl font-bold text-[#0F1419]">
-                    12,456
+                  {dashboardData?.analytics?.totalStudents}
                   </h3>
                 </div>
                 <div className="bg-[#FFC107]/10 p-3 md:p-4 rounded-full">
