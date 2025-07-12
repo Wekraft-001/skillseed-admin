@@ -125,6 +125,29 @@ const MentorOnboardingModal = ({ open, onOpenChange }) => {
                   classNamePrefix="react-select"
                 />
               </div>
+              <div className="space-y-2">
+                <label className="block text-gray-700 font-medium">
+                  City
+                </label>
+                <Input
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) => handleInputChange("phone", e.target.value)}
+                  placeholder="Enter phone number"
+                  className="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-600"
+                />
+              </div><div className="space-y-2">
+                <label className="block text-gray-700 font-medium">
+                  Country
+                </label>
+                <Input
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) => handleInputChange("phone", e.target.value)}
+                  placeholder="Enter phone number"
+                  className="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-600"
+                />
+              </div>
             </div>
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Profile Picture</h3>

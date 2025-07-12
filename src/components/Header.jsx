@@ -1,5 +1,5 @@
 import React, { Fragment, useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Bell, LogOut, ShieldCheck } from "lucide-react";
 import { useSidebar } from "../context/SidebarContext";
@@ -12,7 +12,6 @@ import {
   Transition,
 } from "@headlessui/react";
 import Logo from "../assets/logo.svg";
-import { useNavigate } from "react-router-dom";
 
 const Header = () => {
   const apiURL = import.meta.env.VITE_REACT_APP_BASE_URL;
