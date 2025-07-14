@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import {
   Plus,
@@ -22,7 +23,7 @@ const Schools = () => {
   const [viewMode, setViewMode] = useState("grid");
   const [isOnboardingModalOpen, setIsOnboardingModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [schools, setSchools] = useState([]);
+  // const [schools, setSchools] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
@@ -89,31 +90,53 @@ const Schools = () => {
     }
   };
 
-  useEffect(() => {
-    const getSchools = () => {
-      setLoading(true);
-      axios
-        .get(`${apiURL}/schools/all`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-type": "application/json; charset=UTF-8",
-          },
-        })
-        .then((response) => {
-          console.log(response.data, "Schools");
-          setSchools(response.data);
-          setLoading(false);
-        })
-        .catch((error) => {
-          console.error("Error fetching vendors:", error);
-          setLoading(false);
-        });
-    };
+  // useEffect(() => {
+  //   const getSchools = () => {
+  //     setLoading(true);
+  //     axios
+  //       .get(`${apiURL}/schools/all`, {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //           "Content-type": "application/json; charset=UTF-8",
+  //         },
+  //       })
+  //       .then((response) => {
+  //         console.log(response.data, "Schools");
+  //         setSchools(response.data);
+  //         setLoading(false);
+  //       })
+  //       .catch((error) => {
+  //         console.error("Error fetching vendors:", error);
+  //         setLoading(false);
+  //       });
+  //   };
 
-    getSchools();
-  }, []);
+  //   getSchools();
+  // }, []);
 
   // Calculate pagination
+
+  const fetchSchools = async () => {
+    const res = await axios.get(`${apiURL}/schools/all`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    return res.data;
+  };
+
+  const {
+    data: schools = [],
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["schools"],
+    queryFn: fetchSchools,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
   const indexOfLastUser = currentPage * itemsPerPage;
   const indexOfFirstUser = indexOfLastUser - itemsPerPage;
   const currentSchools = schools.slice(indexOfFirstUser, indexOfLastUser);
@@ -182,7 +205,7 @@ const Schools = () => {
           </div>
         </div>
 
-        {loading ? (
+        {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
             {Array.from({ length: 6 }).map((_, i) => (
               <SkeletonCard key={i} />

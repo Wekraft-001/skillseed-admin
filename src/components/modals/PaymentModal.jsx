@@ -1,7 +1,20 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import SchoolDropdown from "../SchoolDrodwon";
+import axios from "axios";
+import { useForm } from "react-hook-form";
 
 const PaymentModal = ({ isOpen, onClose }) => {
+  const apiUrl = import.meta.env.VITE_REACT_APP_BASE_URL;
+  const token = localStorage.getItem("adminToken");
+  const { handleSubmit } = useForm();
   const modalRef = useRef(null);
+  const [selectedSchool, setSelectedSchool] = useState("");
+  const [amount, setAmount] = useState("");
+  const [numberOfKids, setNumberOfKids] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("");
+  const [transactionType, setTransactionType] = useState("");
+  const [notes, setNotes] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -33,11 +46,43 @@ const PaymentModal = ({ isOpen, onClose }) => {
     };
   }, [isOpen, onClose]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Add your form submission logic here
-    alert("Payment recorded successfully!");
-    onClose();
+  const handleAddTransaction = async () => {
+    if (!selectedSchool || !amount || !paymentMethod || !transactionType) {
+      alert("Please fill all required fields.");
+      return;
+    }
+    const payload = {
+      schoolName: selectedSchool,
+      amount: parseFloat(amount),
+      numberOfKids: parseInt(numberOfKids, 10) || 0,
+      paymentMethod,
+      transactionType,
+      notes,
+    };
+
+    try {
+      setLoading(true);
+      const res = await axios.post(
+        `${apiUrl}/transactions/add-transaction`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log("Transaction created:", res.data);
+      alert("Payment recorded successfully!");
+      onClose();
+    } catch (error) {
+      const msg =
+        error.response?.data?.message || error.message || "Unknown error";
+      console.error("Transaction error:", msg);
+      alert(`Error: ${msg}`);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -70,11 +115,11 @@ const PaymentModal = ({ isOpen, onClose }) => {
               </svg>
             </div>
             <div>
-              <h2 className="md:text-2xl font-bold text-deep-navy">
+              <h2 className="md:text-2xl font-semibold text-deep-navy">
                 Add New Payment
               </h2>
-              <p className="text-gray-500">
-                Record a new transaction for SkillSeed
+              <p className="text-sm text-gray-500">
+                Record a transaction for a SkillSeed School
               </p>
             </div>
           </div>
@@ -96,20 +141,17 @@ const PaymentModal = ({ isOpen, onClose }) => {
           </button>
         </div>
 
-        <form id="paymentForm" className="space-y-6" onSubmit={handleSubmit}>
+        <form
+          id="paymentForm"
+          className="space-y-6"
+          onSubmit={handleSubmit(handleAddTransaction)}
+        >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-semibold text-deep-navy mb-3">
-                School Name
-              </label>
-              <select className="w-full bg-soft-gray border-2 border-gray-200 rounded-2xl px-4 py-3 focus:outline-none focus:border-primary-blue transition">
-                <option value="">Select School</option>
-                <option value="bright-future">Bright Future Academy</option>
-                <option value="starlight">Starlight Secondary</option>
-                <option value="unity">Unity Learning Center</option>
-                <option value="sunshine">Sunshine Primary School</option>
-              </select>
-            </div>
+            <SchoolDropdown
+              value={selectedSchool}
+              onChange={(val) => setSelectedSchool(val)}
+            />
+
             <div>
               <label className="block text-sm font-semibold text-deep-navy mb-3">
                 Amount ($)
@@ -118,6 +160,8 @@ const PaymentModal = ({ isOpen, onClose }) => {
                 type="number"
                 step="0.01"
                 placeholder="0.00"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
                 className="w-full bg-soft-gray border-2 border-gray-200 rounded-2xl px-4 py-3 focus:outline-none focus:border-primary-blue transition"
               />
             </div>
@@ -129,6 +173,8 @@ const PaymentModal = ({ isOpen, onClose }) => {
                 type="number"
                 min="0"
                 placeholder="0"
+                value={numberOfKids}
+                onChange={(e) => setNumberOfKids(e.target.value)}
                 className="w-full bg-soft-gray border-2 border-gray-200 rounded-2xl px-4 py-3 focus:outline-none focus:border-primary-blue transition"
               />
             </div>
@@ -136,7 +182,11 @@ const PaymentModal = ({ isOpen, onClose }) => {
               <label className="block text-sm font-semibold text-deep-navy mb-3">
                 Payment Method
               </label>
-              <select className="w-full bg-soft-gray border-2 border-gray-200 rounded-2xl px-4 py-3 focus:outline-none focus:border-primary-blue transition">
+              <select
+                value={paymentMethod}
+                onChange={(e) => setPaymentMethod(e.target.value)}
+                className="w-full bg-soft-gray border-2 border-gray-200 rounded-2xl px-4 py-3 focus:outline-none focus:border-primary-blue transition"
+              >
                 <option value="">Select Method</option>
                 <option value="credit-card">Credit Card</option>
                 <option value="mobile-money">Mobile Money</option>
@@ -151,33 +201,29 @@ const PaymentModal = ({ isOpen, onClose }) => {
               <label className="block text-sm font-semibold text-deep-navy mb-3">
                 Transaction Type
               </label>
-              <select className="w-full bg-soft-gray border-2 border-gray-200 rounded-2xl px-4 py-3 focus:outline-none focus:border-primary-blue transition">
+              <select
+                value={transactionType}
+                onChange={(e) => setTransactionType(e.target.value)}
+                className="w-full bg-soft-gray border-2 border-gray-200 rounded-2xl px-4 py-3 focus:outline-none focus:border-primary-blue transition"
+              >
                 <option value="">Select Type</option>
-                <option value="subscription">Subscription</option>
-                <option value="one-time">Tier One</option>
-                <option value="refund">Tier Two</option>
+                <option value="Subscription">Subscription</option>
+                <option value="One-time">Tier One</option>
+                <option value="Refund">Tier Two</option>
               </select>
             </div>
             <div>
               <label className="block text-sm font-semibold text-deep-navy mb-3">
-                Transaction Date
+                Narration
               </label>
-              <input
-                type="date"
-                className="w-full bg-soft-gray border-2 border-gray-200 rounded-2xl px-4 py-3 focus:outline-none focus:border-primary-blue transition"
-              />
+              <textarea
+                rows={2}
+                placeholder="Add any additional notes..."
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                className="w-full bg-soft-gray border-2 border-gray-200 rounded-2xl px-4 py-3 focus:outline-none focus:border-primary-blue transition resize-none"
+              ></textarea>
             </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-deep-navy mb-3">
-              Notes (Optional)
-            </label>
-            <textarea
-              rows={3}
-              placeholder="Add any additional notes..."
-              className="w-full bg-soft-gray border-2 border-gray-200 rounded-2xl px-4 py-3 focus:outline-none focus:border-primary-blue transition resize-none"
-            ></textarea>
           </div>
 
           <div className="flex items-center gap-4 pt-6 border-t border-gray-100">
@@ -190,20 +236,52 @@ const PaymentModal = ({ isOpen, onClose }) => {
             </button>
             <button
               type="submit"
-              className="flex-1 bg-[#092043] text-white px-6 py-4 rounded-2xl font-semibold flex items-center justify-center gap-2 hover:bg-primary-blue/90 transition"
+              disabled={loading}
+              className={`flex-1 bg-[#092043] text-white px-6 py-4 rounded-2xl font-semibold flex items-center justify-center gap-2 transition ${
+                loading
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:bg-primary-blue/90"
+              }`}
             >
-              {/* Plus SVG */}
-              <svg
-                className="svg-inline--fa fa-plus"
-                width="20"
-                height="20"
-                viewBox="0 0 448 512"
-                fill="currentColor"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z" />
-              </svg>
-              Add Payment
+              {loading ? (
+                <>
+                  <svg
+                    className="animate-spin h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 018 8h-4l3 3 3-3h-4a8 8 0 01-8 8v-4l-3 3 3 3v-4a8 8 0 01-8-8z"
+                    ></path>
+                  </svg>
+                  Processing...
+                </>
+              ) : (
+                <>
+                  <svg
+                    className="svg-inline--fa fa-plus"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 448 512"
+                    fill="currentColor"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z" />
+                  </svg>
+                  Add Payment
+                </>
+              )}
             </button>
           </div>
         </form>

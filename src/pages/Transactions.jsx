@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import Chart from "chart.js/auto";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import {
   DollarSign,
   CreditCard,
@@ -10,17 +12,52 @@ import {
   Eye,
 } from "lucide-react";
 import PaymentModal from "../components/modals/PaymentModal";
+import moment from "moment";
 
 const Transactions = () => {
+  const apiURL = import.meta.env.VITE_REACT_APP_BASE_URL;
+  const token = localStorage.getItem("adminToken");
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const revenueChartRef = useRef(null);
   const paymentChartRef = useRef(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  const fetchTransactions = async () => {
+    const res = await axios.get(`${apiURL}/transactions/all`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    // console.log(res.data);
+    return res.data;
+  };
+
+  const {
+    data: transactions = [],
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["transactions"],
+    queryFn: fetchTransactions,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  const totalPages = Math.ceil(transactions.length / itemsPerPage);
+  const paginatedTransactions = transactions.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   useEffect(() => {
-    // Clean up existing charts before creating new ones
+    if (!transactions || transactions.length === 0) return;
+
     if (revenueChartRef.current) {
       revenueChartRef.current.destroy();
     }
+
     if (paymentChartRef.current) {
       paymentChartRef.current.destroy();
     }
@@ -72,14 +109,36 @@ const Transactions = () => {
     // Payment Methods Chart
     const paymentCtx = document.getElementById("paymentChart");
     if (paymentCtx) {
+      // Count occurrences of each payment method
+      const paymentCounts = transactions.reduce((acc, trx) => {
+        const method = trx.paymentMethod || "Unknown";
+        acc[method] = (acc[method] || 0) + 1;
+        return acc;
+      }, {});
+
+      const labels = Object.keys(paymentCounts);
+      const data = Object.values(paymentCounts);
+
+      const colors = [
+        "#1A73E8",
+        "#FFC107",
+        "#10B981",
+        "#F59E0B",
+        "#6366F1",
+        "#EF4444",
+        "#14B8A6",
+      ];
       paymentChartRef.current = new Chart(paymentCtx, {
         type: "doughnut",
         data: {
-          labels: ["Credit Card", "Mobile Money", "Bank Transfer", "PayPal"],
+          // labels: ["Credit Card", "Mobile Money", "Bank Transfer", "PayPal"],
+          labels,
           datasets: [
             {
-              data: [45, 30, 15, 10],
-              backgroundColor: ["#1A73E8", "#FFC107", "#10B981", "#F59E0B"],
+              // data: [45, 30, 15, 10],
+              data,
+              // backgroundColor: ["#1A73E8", "#FFC107", "#10B981", "#F59E0B"],
+              backgroundColor: colors.slice(0, labels.length),
               borderWidth: 0,
               cutout: "70%",
             },
@@ -112,7 +171,6 @@ const Transactions = () => {
       }
     };
   }, []);
-
   return (
     <div className="bg-[#F5F7FA] min-h-[calc(100vh-80px)]">
       <div id="main-content" className=" p-6 md:p-8 w-full max-w-[1800px]">
@@ -145,6 +203,7 @@ const Transactions = () => {
           </div>
         </header>
 
+        {/* Cards */}
         <div
           id="stats-overview"
           className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"
@@ -176,11 +235,13 @@ const Transactions = () => {
               <div className="bg-[#FAB548]/25 p-3 rounded-full">
                 <CreditCard className="text-[#FAB548] w-6 h-6" />
               </div>
-              <span className="text-green-500 text-sm font-semibold">
+              {/* <span className="text-green-500 text-sm font-semibold">
                 +8.2%
-              </span>
+              </span> */}
             </div>
-            <h3 className="text-2xl font-bold text-deep-navy">1,247</h3>
+            <h3 className="text-2xl font-bold text-deep-navy">
+              {transactions.length}
+            </h3>
             <p className="text-gray-500 text-sm">Total Transactions</p>
           </div>
           {/* Subscriptions Card */}
@@ -193,11 +254,13 @@ const Transactions = () => {
               <div className="bg-green-500/10 p-3 rounded-full">
                 <Users className="text-green-500 w-6 h-6" />
               </div>
-              <span className="text-green-500 text-sm font-semibold">
+              {/* <span className="text-green-500 text-sm font-semibold">
                 +15.3%
-              </span>
+              </span> */}
             </div>
-            <h3 className="text-2xl font-bold text-deep-navy">892</h3>
+            <h3 className="text-2xl font-bold text-deep-navy">
+              {transactions.length}
+            </h3>
             <p className="text-gray-500 text-sm">Active Subscriptions</p>
           </div>
           {/* Refunds Card */}
@@ -216,7 +279,7 @@ const Transactions = () => {
             <p className="text-gray-500 text-sm">Refunds</p>
           </div> */}
         </div>
-
+        {/* Charts */}
         <div
           id="charts-section"
           className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8"
@@ -253,8 +316,8 @@ const Transactions = () => {
             </div>
           </div>
         </div>
-
-        <div
+        {/* Transactions Filter */}
+        {/* <div
           id="filters-section"
           className="bg-white rounded-2xl p-6 shadow-lg mb-8"
         >
@@ -315,8 +378,9 @@ const Transactions = () => {
               Export CSV
             </button>
           </div>
-        </div>
+        </div> */}
 
+        {/* Transactions Table */}
         <div
           id="transactions-table"
           className="bg-white rounded-2xl shadow-lg overflow-hidden"
@@ -335,132 +399,89 @@ const Transactions = () => {
                   <th className="px-6 py-4">Amount</th>
                   <th className="px-6 py-4">Type</th>
                   <th className="px-6 py-4">Date</th>
-                  <th className="px-6 py-4">Status</th>
+                  {/* <th className="px-6 py-4">Status</th> */}
                   <th className="px-6 py-4">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                <tr className=" hover:bg-primary-blue/5 transition">
-                  <td className="px-6 py-4 font-mono text-sm text-gray-600">
-                    #TXN-001247
-                  </td>
-                  <td className="px-6 py-4 flex items-center gap-3">
-                    <img
-                      src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg"
-                      className="w-8 h-8 rounded-full border border-primary-blue object-cover"
-                      alt="school avatar"
-                    />
-                    <span className="font-medium text-deep-navy">
-                      Bright Future Academy
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 font-bold text-green-600">
-                    $150.00
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="bg-primary-blue/10 text-primary-blue px-3 py-1 rounded-full text-xs font-medium">
-                      Subscription
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-gray-600">Dec 15, 2024</td>
-                  <td className="px-6 py-4">
-                    <span className="bg-green-500/10 text-green-600 px-3 py-1 rounded-full text-xs font-medium">
-                      Completed
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <button className="rounded-full bg-[#3C91BA] text-white w-8 h-8 flex items-center justify-center shadow hover:bg-primary-blue/90 transition">
-                      <Eye className="text-white w-5 h-5" />
-                    </button>
-                  </td>
-                </tr>
-                <tr className=" hover:bg-primary-blue/5 transition">
-                  <td className="px-6 py-4 font-mono text-sm text-gray-600">
-                    #TXN-001246
-                  </td>
-                  <td className="px-6 py-4 flex items-center gap-3">
-                    <img
-                      src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg"
-                      className="w-8 h-8 rounded-full border border-accent-yellow object-cover"
-                      alt="school avatar"
-                    />
-                    <span className="font-medium text-deep-navy">
-                      Starlight Secondary
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 font-bold text-green-600">
-                    $299.00
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="bg-accent-yellow/10 text-accent-yellow px-3 py-1 rounded-full text-xs font-medium">
-                      One-time
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-gray-600">Dec 14, 2024</td>
-                  <td className="px-6 py-4">
-                    <span className="bg-yellow-500/10 text-yellow-600 px-3 py-1 rounded-full text-xs font-medium">
-                      Pending
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <button className="rounded-full bg-[#3C91BA] text-white w-8 h-8 flex items-center justify-center shadow hover:bg-primary-blue/90 transition">
-                      <Eye className="text-white w-5 h-5" />
-                    </button>
-                  </td>
-                </tr>
-                <tr className=" hover:bg-primary-blue/5 transition">
-                  <td className="px-6 py-4 font-mono text-sm text-gray-600">
-                    #TXN-001245
-                  </td>
-                  <td className="px-6 py-4 flex items-center gap-3">
-                    <img
-                      src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg"
-                      className="w-8 h-8 rounded-full border border-primary-blue object-cover"
-                      alt="school avatar"
-                    />
-                    <span className="font-medium text-deep-navy">
-                      Unity Learning Center
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 font-bold text-red-600">-$50.00</td>
-                  <td className="px-6 py-4">
-                    <span className="bg-red-500/10 text-red-600 px-3 py-1 rounded-full text-xs font-medium">
-                      Refund
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-gray-600">Dec 13, 2024</td>
-                  <td className="px-6 py-4">
-                    <span className="bg-green-500/10 text-green-600 px-3 py-1 rounded-full text-xs font-medium">
-                      Completed
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <button className="rounded-full bg-[#3C91BA] text-white w-8 h-8 flex items-center justify-center shadow hover:bg-primary-blue/90 transition">
-                      <Eye className="text-white w-5 h-5" />
-                    </button>
-                  </td>
-                </tr>
+                {paginatedTransactions.map((trx) => (
+                  <tr className=" hover:bg-primary-blue/5 transition">
+                    <td className="px-6 py-4 font-mono text-sm text-gray-600">
+                      #TXN-{trx._id?.slice(0, 5)}
+                    </td>
+                    <td className="px-6 py-4 flex items-center gap-3">
+                      <img
+                        src={trx?.school?.logoUrl}
+                        className="w-8 h-8 rounded-full border border-primary-blue object-cover"
+                        alt="school avatar"
+                      />
+                      <span className="font-medium text-deep-navy">
+                        {trx?.school?.schoolName}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 font-bold text-green-600">
+                      ${trx?.amount}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="bg-primary-blue/10 text-primary-blue px-3 py-1 rounded-full text-xs font-medium">
+                        {trx?.transactionType}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-gray-600">
+                      {moment(trx?.createdAt).format("MMM D, YYYY • h:mm A")}
+                    </td>
+                    {/* <td className="px-6 py-4">
+                      <span className="bg-green-500/10 text-green-600 px-3 py-1 rounded-full text-xs font-medium">
+                        Completed
+                      </span>
+                    </td> */}
+                    <td className="px-6 py-4">
+                      <button className="rounded-full bg-[#3C91BA] text-white w-8 h-8 flex items-center justify-center shadow hover:bg-primary-blue/90 transition">
+                        <Eye className="text-white w-5 h-5" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
           <div className="p-6 flex justify-between items-center">
             <span className="text-gray-600 text-sm">
-              Showing 1-10 of 247 transactions
+              Showing {(currentPage - 1) * itemsPerPage + 1}–
+              {Math.min(currentPage * itemsPerPage, transactions.length)} of{" "}
+              {transactions.length} transactions
             </span>
+
             <div className="flex gap-2">
-              <button className="rounded-full bg-white border border-gray-200 w-10 h-10 flex items-center justify-center hover:bg-primary-blue hover:text-white transition">
+              <button
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                className="rounded-full bg-white border border-gray-200 w-10 h-10 flex items-center justify-center hover:bg-primary-blue hover:text-white transition disabled:opacity-40"
+              >
                 <ChevronLeft className="w-5 h-5" />
               </button>
-              <button className="rounded-full bg-primary-blue text-white w-10 h-10 flex items-center justify-center">
-                1
-              </button>
-              <button className="rounded-full bg-white border border-gray-200 w-10 h-10 flex items-center justify-center hover:bg-primary-blue hover:text-white transition">
-                2
-              </button>
-              <button className="rounded-full bg-white border border-gray-200 w-10 h-10 flex items-center justify-center hover:bg-primary-blue hover:text-white transition">
-                3
-              </button>
-              <button className="rounded-full bg-white border border-gray-200 w-10 h-10 flex items-center justify-center hover:bg-primary-blue hover:text-white transition">
+
+              {Array.from({ length: totalPages }).map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentPage(index + 1)}
+                  className={`rounded-full w-10 h-10 flex items-center justify-center border ${
+                    currentPage === index + 1
+                      ? "bg-primary-blue text-white"
+                      : "bg-white text-gray-700 border-gray-200 hover:bg-primary-blue hover:text-white"
+                  }`}
+                >
+                  {index + 1}
+                </button>
+              ))}
+
+              <button
+                disabled={currentPage === totalPages}
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
+                className="rounded-full bg-white border border-gray-200 w-10 h-10 flex items-center justify-center hover:bg-primary-blue hover:text-white transition disabled:opacity-40"
+              >
                 <ChevronRight className="w-5 h-5" />
               </button>
             </div>

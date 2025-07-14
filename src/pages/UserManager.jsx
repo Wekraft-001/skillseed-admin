@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { Search, Plus, Edit, Trash2 } from "lucide-react";
 import { SkeletonList } from "../components/LoadingSkeleton";
@@ -7,7 +8,7 @@ const UserManagager = () => {
   const apiURL = import.meta.env.VITE_REACT_APP_BASE_URL;
   const token = localStorage.getItem("adminToken");
   const [loading, setLoading] = useState(false);
-  const [users, setUsers] = useState([]);
+  // const [users, setUsers] = useState([]);
   const [selectedRole, setSelectedRole] = useState("All Roles");
   const [selectedSchool, setSelectedSchool] = useState("All Schools");
   const [searchTerm, setSearchTerm] = useState("");
@@ -73,31 +74,58 @@ const UserManagager = () => {
     }
   };
 
-  useEffect(() => {
-    const getUsers = () => {
-      setLoading(true);
-      axios
-        .get(`${apiURL}/users/all`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-type": "application/json; charset=UTF-8",
-          },
-        })
-        .then((response) => {
-          // console.log(response.data, "Users");
-          setUsers(response.data);
-          setLoading(false);
-        })
-        .catch((error) => {
-          console.error("Error fetching vendors:", error);
-          setLoading(false);
-        });
-    };
+  // useEffect(() => {
+  //   const getUsers = () => {
+  //     setLoading(true);
+  //     axios
+  //       .get(`${apiURL}/users/all`, {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //           "Content-type": "application/json; charset=UTF-8",
+  //         },
+  //       })
+  //       .then((response) => {
+  //         console.log(response.data, "Users");
+  //         const filteredUsers = response.data.filter(
+  //           (user) => user.role?.toLowerCase() !== "super_admin"
+  //         );
+  //         setUsers(filteredUsers);
+  //         setLoading(false);
+  //       })
+  //       .catch((error) => {
+  //         console.error("Error fetching vendors:", error);
+  //         setLoading(false);
+  //       });
+  //   };
 
-    getUsers();
-  }, []);
+  //   getUsers();
+  // }, []);
 
   // Calculate pagination
+
+  const fetchUsers = async () => {
+    const res = await axios.get(`${apiURL}/users/all`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    return res.data.filter(
+      (user) => user?.role?.toLowerCase() !== "super_admin"
+    );
+  };
+
+  const {
+    data: users = [],
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["users"],
+    queryFn: fetchUsers,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
   const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
@@ -192,12 +220,16 @@ const UserManagager = () => {
                 </tr>
               </thead>
               <tbody>
-                {loading ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
-                    {Array.from({ length: 6 }).map((_, i) => (
-                      <SkeletonList key={i} />
-                    ))}
-                  </div>
+                {isLoading ? (
+                  <tr>
+                    <td colSpan="3">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7 p-4">
+                        {Array.from({ length: 6 }).map((_, i) => (
+                          <SkeletonList key={i} />
+                        ))}
+                      </div>
+                    </td>
+                  </tr>
                 ) : (
                   <>
                     {currentUsers.map((user) => (
