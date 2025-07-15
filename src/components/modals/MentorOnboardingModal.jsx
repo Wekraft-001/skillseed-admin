@@ -1,8 +1,11 @@
 import React, { useState } from "react";
+import axios from "axios";
+import { useForm } from "react-hook-form";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Input } from "../ui/formComponents/input";
 import { Camera, Upload, ArrowRight, Star, Users } from "lucide-react";
 import Select from "react-select";
+import { ToastContainer } from "react-toastify";
 
 const specialtyOptions = [
   { value: "Science", label: "Science" },
@@ -13,27 +16,110 @@ const specialtyOptions = [
 ];
 
 const MentorOnboardingModal = ({ open, onOpenChange }) => {
-  const [formData, setFormData] = useState({
-    fullName: "",
-    specialty: "",
-    email: "",
-    phone: "",
-    bio: "",
-  });
+  const apiURL = import.meta.env.VITE_REACT_APP_BASE_URL;
+  const token = localStorage.getItem("adminToken");
+  const { handleSubmit } = useForm();
+  const [image, setImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleInputChange = (field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+  const initialValue = {
+    firstName: "",
+    lastName: "",
+    email: "",
+    phoneNumber: "",
+    specialty: null,
+    city: "",
+    country: "",
+  };
+
+  const [createMentorDetails, setCreateMentorDetails] = useState(initialValue);
+
+  const { firstName, lastName, email, phoneNumber, specialty, city, country } =
+    createMentorDetails;
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setCreateMentorDetails({ ...createMentorDetails, [name]: value });
   };
 
   const handleSelectChange = (value) => {
-    setFormData((prev) => ({
+    setCreateMentorDetails((prev) => ({
       ...prev,
       specialty: value,
     }));
   };
 
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      alert("Image too large. Max size is 2MB.");
+      return;
+    }
+    setImage(file);
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setImagePreview(reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleAddMentor = () => {
+    if (!specialty) {
+      alert("Specialty is required");
+      return;
+    }
+
+    if (!image) {
+      alert("Image is required");
+      return;
+    }
+
+    setLoading(true);
+    const url = `${apiURL}/mentors/onboard`;
+    const formData = new FormData();
+    formData.append("firstName", firstName);
+    formData.append("lastName", lastName);
+    formData.append("specialty", specialty?.value);
+    formData.append("email", email);
+    formData.append("phoneNumber", phoneNumber);
+    formData.append("city", city);
+    formData.append("country", country);
+    formData.append("image", image);
+
+    setLoading(false);
+    axios
+      .post(url, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        console.log(response, "response from adding mentor");
+        if (response.status === 201) {
+          toast.success("Mentor Successfully Added");
+          setCreateMentorDetails(initialValue);
+          setImagePreview(null);
+          setImage(null);
+          onClose();
+        }
+      })
+      .catch((error) => {
+        const message =
+          error?.response?.data?.message || "Something went wrong";
+        alert(message);
+      })
+
+      .finally(() => {
+        setLoading(false);
+      });
+  };
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
+      <ToastContainer />
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-0 bg-white">
         <div className="bg-white rounded-3xl shadow-md p-8 relative overflow-hidden">
           <span className="absolute left-0 top-0 w-24 h-24 bg-blue-600 opacity-10 rounded-full z-0"></span>
@@ -58,7 +144,10 @@ const MentorOnboardingModal = ({ open, onOpenChange }) => {
             </div>
           </div> */}
 
-          <form className="space-y-7 relative z-10">
+          <form
+            className="space-y-7 relative z-10"
+            onSubmit={handleSubmit(handleAddMentor)}
+          >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-7">
               <div className="space-y-2">
                 <label className="block text-gray-700 font-medium">
@@ -66,11 +155,10 @@ const MentorOnboardingModal = ({ open, onOpenChange }) => {
                 </label>
                 <Input
                   type="text"
-                  value={formData.fullName}
-                  onChange={(e) =>
-                    handleInputChange("fullName", e.target.value)
-                  }
-                  placeholder="e.g. Jane Doe"
+                  name="firstName"
+                  value={firstName}
+                  onChange={handleInputChange}
+                  placeholder="e.g. Jane"
                   className="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-600"
                 />
               </div>
@@ -80,11 +168,10 @@ const MentorOnboardingModal = ({ open, onOpenChange }) => {
                 </label>
                 <Input
                   type="text"
-                  value={formData.fullName}
-                  onChange={(e) =>
-                    handleInputChange("fullName", e.target.value)
-                  }
-                  placeholder="e.g. Jane Doe"
+                  name="lastName"
+                  value={lastName}
+                  onChange={handleInputChange}
+                  placeholder="e.g. Doe"
                   className="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-600"
                 />
               </div>
@@ -94,8 +181,9 @@ const MentorOnboardingModal = ({ open, onOpenChange }) => {
                 </label>
                 <Input
                   type="email"
-                  value={formData.email}
-                  onChange={(e) => handleInputChange("email", e.target.value)}
+                  name="email"
+                  value={email}
+                  onChange={handleInputChange}
                   placeholder="mentor@example.com"
                   className="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-600"
                 />
@@ -105,9 +193,10 @@ const MentorOnboardingModal = ({ open, onOpenChange }) => {
                   Phone Number
                 </label>
                 <Input
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) => handleInputChange("phone", e.target.value)}
+                  type="text"
+                  name="phoneNumber"
+                  value={phoneNumber}
+                  onChange={handleInputChange}
                   placeholder="Enter phone number"
                   className="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-600"
                 />
@@ -118,7 +207,7 @@ const MentorOnboardingModal = ({ open, onOpenChange }) => {
                 </label>
                 <Select
                   options={specialtyOptions}
-                  value={formData.specialty}
+                  value={specialty}
                   onChange={handleSelectChange}
                   placeholder="Select Specialty"
                   className="react-select-container"
@@ -126,24 +215,25 @@ const MentorOnboardingModal = ({ open, onOpenChange }) => {
                 />
               </div>
               <div className="space-y-2">
-                <label className="block text-gray-700 font-medium">
-                  City
-                </label>
+                <label className="block text-gray-700 font-medium">City</label>
                 <Input
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) => handleInputChange("phone", e.target.value)}
-                  placeholder="Enter phone number"
+                  type="text"
+                  name="city"
+                  value={city}
+                  onChange={handleInputChange}
+                  placeholder="Enter city of residence"
                   className="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-600"
                 />
-              </div><div className="space-y-2">
+              </div>
+              <div className="space-y-2">
                 <label className="block text-gray-700 font-medium">
                   Country
                 </label>
                 <Input
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) => handleInputChange("phone", e.target.value)}
+                  type="text"
+                  name="country"
+                  value={country}
+                  onChange={handleInputChange}
                   placeholder="Enter phone number"
                   className="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-600"
                 />
@@ -151,24 +241,37 @@ const MentorOnboardingModal = ({ open, onOpenChange }) => {
             </div>
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Profile Picture</h3>
-              <div className="flex items-center space-x-6">
-                <div className="relative group">
-                  <img
-                    src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=facearea&w=96&h=96&facepad=2&q=80"
-                    className="w-24 h-24 rounded-full border-4 border-blue-600 object-cover shadow-lg bg-gray-100"
-                    alt="Profile"
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div
+                  className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-[#1A73E8] transition-colors cursor-pointer relative"
+                  onClick={() => document.getElementById("imageInput")?.click()}
+                >
+                  {imagePreview ? (
+                    <img
+                      src={imagePreview}
+                      alt="Profile Photo Preview"
+                      className="mx-auto h-20 object-contain"
+                    />
+                  ) : (
+                    <>
+                      <Upload className="w-10 h-10 text-gray-400 mb-2 mx-auto" />
+                      <p className="text-gray-600">
+                        Upload Mentor Profile Picture
+                      </p>
+                      <span className="text-sm text-gray-400">
+                        JPG or PNG (Max 2MB)
+                      </span>
+                    </>
+                  )}
+
+                  <input
+                    type="file"
+                    id="imageInput"
+                    accept="image/png, image/jpeg"
+                    className="hidden"
+                    onChange={handleImageUpload}
                   />
-                  <button
-                    type="button"
-                    size="icon"
-                    className="absolute bottom-0 right-0 bg-yellow-400 p-2 rounded-full border-2 border-white hover:bg-yellow-400/90 text-gray-900"
-                  >
-                    <Camera className="w-4 h-4" />
-                  </button>
                 </div>
-                <span className="text-gray-500 text-sm">
-                  Use a cute photo! (JPG or PNG, Max 2MB)
-                </span>
               </div>
             </div>
             {/* <div className="space-y-2">
@@ -205,8 +308,35 @@ const MentorOnboardingModal = ({ open, onOpenChange }) => {
               <button
                 type="submit"
                 className="px-6 py-3 bg-[#092043] text-white rounded-full font-semibold hover:bg-[#092043]/90 flex items-center space-x-2"
+                disabled={loading}
               >
-                <span>Submit</span>
+                <span>
+                  {" "}
+                  {loading ? (
+                    <svg
+                      className="animate-spin h-6 w-6 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.963 7.963 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                  ) : (
+                    "Submit"
+                  )}
+                </span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>

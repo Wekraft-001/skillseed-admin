@@ -30,7 +30,7 @@ const Transactions = () => {
         "Content-Type": "application/json",
       },
     });
-    // console.log(res.data);
+    console.log(res.data);
     return res.data;
   };
 
@@ -111,7 +111,7 @@ const Transactions = () => {
     if (paymentCtx) {
       // Count occurrences of each payment method
       const paymentCounts = transactions.reduce((acc, trx) => {
-        const method = trx.paymentMethod || "Unknown";
+        const method = trx?.paymentMethod || "Unknown";
         acc[method] = (acc[method] || 0) + 1;
         return acc;
       }, {});
