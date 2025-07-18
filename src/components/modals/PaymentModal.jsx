@@ -207,7 +207,7 @@ const PaymentModal = ({ isOpen, onClose }) => {
                 className="w-full bg-soft-gray border-2 border-gray-200 rounded-2xl px-4 py-3 focus:outline-none focus:border-primary-blue transition"
               >
                 <option value="">Select Type</option>
-                <option value="Subscription">Subscription</option>
+                <option value="subscription">Subscription</option>
                 <option value="One-time">Tier One</option>
                 <option value="Refund">Tier Two</option>
               </select>
