@@ -15,6 +15,7 @@ import Events from "./pages/Events";
 import Mentors from "./pages/Mentors";
 import Transactions from "./pages/Transactions";
 import "react-loading-skeleton/dist/skeleton.css";
+import Content from "./pages/Content";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ const App = () => (
               <Route path="transactions" element={<Transactions />} />
               <Route path="progress" element={<ProgressTracking />} />
               <Route path="notifications" element={<Notifications />} />
+              <Route path="content" element={<Content />} />
               <Route path="settings" element={<Settings />} />
             </Route>
           </Routes>

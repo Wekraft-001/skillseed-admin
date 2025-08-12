@@ -12,6 +12,7 @@ import {
   Bell,
   Settings,
   BarChart3,
+  FileText,
 } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "../lib/utils";
@@ -107,6 +108,12 @@ const Sidebar = () => {
       icon: <Trophy className="w-5 h-5 mr-2" />,
       label: "Challenges",
       path: "/challenges",
+    },
+
+    {
+      icon: <FileText className="w-5 h-5 mr-2" />,
+      label: "Content",
+      path: "/content",
     },
     {
       icon: <UserCheck className="w-5 h-5 mr-2" />,

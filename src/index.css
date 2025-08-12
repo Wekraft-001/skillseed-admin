@@ -26,3 +26,29 @@
 .bubble-pink {
   background: rgba(255, 182, 193, 0.12);
 }
+
+@theme {
+  /* FONT FAMILY */
+  --font-cocon: "Cocon", sans-serif;
+
+  --font-nexa: "nexaround", sans-serif;
+
+  --font-nunito: "Nunito", sans-serif;
+
+  /* BREAK POINTS */
+  --breakpoint-3xl: 120rem;
+
+  /* COLORS */
+  --color-primary-blue: #1a73e8;
+
+  --color-accent-yellow: #ffc107;
+
+  --color-soft-gray: #f5f7fa;
+
+  --color-primary: 217, 90%, 54%;
+  --primary-foreground: 0, 0%, 100%;
+
+  --ease-fluid: cubic-bezier(0.3, 0, 0, 1);
+  --ease-snappy: cubic-bezier(0.2, 0, 0, 1);
+  /* ... */
+}
