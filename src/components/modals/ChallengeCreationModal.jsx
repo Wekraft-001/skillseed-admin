@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { X, FileImage, Send } from "lucide-react";
 import {
   Dialog,
@@ -6,15 +6,26 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../../components/ui/dialog";
-// import {
-//   Select,
-//   SelectContent,
-//   SelectItem,
-//   SelectTrigger,
-//   SelectValue,
-// } from "@/components/ui/select";
+import Select from "react-select";
+
+const categoryOptions = [
+  { value: "Science", label: "Science" },
+  { value: "Technology", label: "Technology" },
+  { value: "Entrepreneurship", label: "Entrepreneurship" },
+  { value: "Mathematics", label: "Mathematics" },
+];
+
+const ageGroupOptions = [
+  { value: "6-8", label: "6-8" },
+  { value: "9-12", label: "9-12" },
+  { value: "13-15", label: "13-15" },
+  { value: "16-17", label: "16-17" },
+];
 
 const ChallengeCreationModal = ({ isOpen, onClose }) => {
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedAgeGroup, setSelectedAgeGroup] = useState(null);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Challenge created!");
@@ -51,19 +62,16 @@ const ChallengeCreationModal = ({ isOpen, onClose }) => {
           </p>
         </DialogHeader>
 
-        <div className="relative max-w-4xl mx-auto bg-white rounded-3xl shadow-lg p-10 border border-gray-200 mt-4 overflow-visible mx-8 mb-8">
-          <div className="absolute -top-12 left-1/2 -translate-x-1/2 flex items-center justify-center z-20">
+        <div className="relative max-w-4xl mx-auto bg-white rounded-3xl shadow-lg p-10 border border-gray-200 overflow-visible mb-8">
+          {/* <div className="absolute -top-12 left-1/2 -translate-x-1/2 flex items-center justify-center z-20">
             <img
               src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-8.jpg"
               className="w-24 h-24 rounded-full border-4 border-[#FFC107] bg-white object-cover shadow-xl"
               alt="Baby Avatar"
             />
-          </div>
+          </div> */}
 
-          <form
-            onSubmit={handleSubmit}
-            className="mt-16 space-y-8 relative z-10"
-          >
+          <form onSubmit={handleSubmit} className=" space-y-8 relative z-10">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="flex flex-col">
                 <label
@@ -88,19 +96,27 @@ const ChallengeCreationModal = ({ isOpen, onClose }) => {
                 >
                   Category
                 </label>
-                {/* <Select>
-                  <SelectTrigger className="rounded-xl border border-gray-200 bg-gray-50 px-6 py-3 text-base focus:outline-none focus:border-[#1A73E8] font-medium h-12">
-                    <SelectValue placeholder="Select Category" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white border border-gray-200 rounded-xl shadow-lg">
-                    <SelectItem value="Science">Science</SelectItem>
-                    <SelectItem value="Technology">Technology</SelectItem>
-                    <SelectItem value="Entrepreneurship">
-                      Entrepreneurship
-                    </SelectItem>
-                    <SelectItem value="Mathematics">Mathematics</SelectItem>
-                  </SelectContent>
-                </Select> */}
+                <Select
+                  options={categoryOptions}
+                  value={selectedCategory}
+                  onChange={setSelectedCategory}
+                  placeholder="Select Category"
+                  className="w-full"
+                  classNames={{
+                    control: (state) =>
+                      `rounded-xl border px-2 py-1 h-12 text-base font-medium ${
+                        state.isFocused
+                          ? "border-[#1A73E8] shadow-md"
+                          : "border-gray-200"
+                      }`,
+                    menu: () =>
+                      "bg-white border border-gray-200 rounded-xl shadow-lg",
+                    option: (state) =>
+                      `px-4 py-2 cursor-pointer ${
+                        state.isFocused ? "bg-blue-100 text-blue-700" : ""
+                      }`,
+                  }}
+                />
               </div>
 
               <div className="flex flex-col">
@@ -157,7 +173,7 @@ const ChallengeCreationModal = ({ isOpen, onClose }) => {
             <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
               <div className="flex flex-col w-full md:w-1/2">
                 <label className="font-semibold text-[#0F1419] mb-2">
-                  Upload Supporting Image (Optional)
+                  Upload Supporting Image
                 </label>
                 <input
                   type="file"
@@ -169,53 +185,46 @@ const ChallengeCreationModal = ({ isOpen, onClose }) => {
                 <label className="font-semibold text-[#0F1419] mb-2">
                   Age Group
                 </label>
-                {/* <Select>
-                  <SelectTrigger className="rounded-xl border border-gray-200 bg-gray-50 px-6 py-3 text-base focus:outline-none focus:border-[#1A73E8] font-medium h-12">
-                    <SelectValue placeholder="Select Age Group" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white border border-gray-200 rounded-xl shadow-lg">
-                    <SelectItem value="5-7">5-7 Years</SelectItem>
-                    <SelectItem value="8-10">8-10 Years</SelectItem>
-                    <SelectItem value="11-13">11-13 Years</SelectItem>
-                    <SelectItem value="14-16">14-16 Years</SelectItem>
-                  </SelectContent>
-                </Select> */}
+                <Select
+                  options={ageGroupOptions}
+                  value={selectedAgeGroup}
+                  onChange={setSelectedAgeGroup}
+                  placeholder="Select Age Group"
+                  className="w-full"
+                  classNames={{
+                    control: (state) =>
+                      `rounded-xl border px-2 py-1 h-12 text-base font-medium ${
+                        state.isFocused
+                          ? "border-[#1A73E8] shadow-md"
+                          : "border-gray-200"
+                      }`,
+                    menu: () =>
+                      "bg-white border border-gray-200 rounded-xl shadow-lg",
+                    option: (state) =>
+                      `px-4 py-2 cursor-pointer ${
+                        state.isFocused ? "bg-blue-100 text-blue-700" : ""
+                      }`,
+                  }}
+                />
               </div>
             </div>
 
-            <div className="flex flex-col md:flex-row gap-6">
-              <div className="flex items-center space-x-3">
-                <input
-                  type="checkbox"
-                  id="featured"
-                  className="w-5 h-5 accent-[#1A73E8] rounded"
-                />
-                <label
-                  htmlFor="featured"
-                  className="font-medium text-[#0F1419]"
-                >
-                  Mark as Featured
+            <div className="flex flex-col w-full">
+                <label className="font-semibold text-[#0F1419] mb-2">
+                  Add Url for Demo Video
                 </label>
-              </div>
-              <div className="flex items-center space-x-3">
                 <input
-                  type="checkbox"
-                  id="public"
-                  className="w-5 h-5 accent-[#1A73E8] rounded"
-                  defaultChecked
+                  type="file"
+                  accept="image/*"
+                  className="file:rounded-full file:bg-[#1A73E8] file:text-white file:px-5 file:py-2 file:border-none file:font-semibold file:cursor-pointer bg-gray-50 rounded-xl px-3 py-2 border border-gray-200"
                 />
-                <label htmlFor="public" className="font-medium text-[#0F1419]">
-                  Make Publicly Visible
-                </label>
               </div>
-            </div>
 
             <div className="flex justify-end items-center space-x-4 pt-6">
               <button
                 type="button"
-                variant="outline"
                 onClick={onClose}
-                className="rounded-full px-6 py-3 font-semibold"
+                className="rounded-full px-6 py-3 font-semibold border"
               >
                 Cancel
               </button>

@@ -13,7 +13,7 @@ const UserManagager = () => {
   const [selectedSchool, setSelectedSchool] = useState("All Schools");
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const usersPerPage = 5;
+  const usersPerPage = 6;
 
   const users1 = [
     {
@@ -74,35 +74,6 @@ const UserManagager = () => {
     }
   };
 
-  // useEffect(() => {
-  //   const getUsers = () => {
-  //     setLoading(true);
-  //     axios
-  //       .get(`${apiURL}/users/all`, {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //           "Content-type": "application/json; charset=UTF-8",
-  //         },
-  //       })
-  //       .then((response) => {
-  //         console.log(response.data, "Users");
-  //         const filteredUsers = response.data.filter(
-  //           (user) => user.role?.toLowerCase() !== "super_admin"
-  //         );
-  //         setUsers(filteredUsers);
-  //         setLoading(false);
-  //       })
-  //       .catch((error) => {
-  //         console.error("Error fetching vendors:", error);
-  //         setLoading(false);
-  //       });
-  //   };
-
-  //   getUsers();
-  // }, []);
-
-  // Calculate pagination
-
   const fetchUsers = async () => {
     const res = await axios.get(`${apiURL}/users/all`, {
       headers: {
@@ -150,7 +121,7 @@ const UserManagager = () => {
         </header>
 
         {/* Filters */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm mb-4">
+        <div className="bg-white p-6 rounded-2xl shadow-sm mb-4 hidden">
           <div className="flex flex-col md:flex-row gap-4 items-center">
             <div className="flex-1">
               <div className="relative">
@@ -195,8 +166,35 @@ const UserManagager = () => {
 
         {/* User List */}
         <div className="bg-white rounded-2xl shadow-sm">
-          <div className="p-6 border-b border-gray-100">
+          {/* List Header */}
+          <div className="p-6 border-b border-gray-100 flex items-center justify-between">
             <h3 className="text-xl font-semibold text-[#0F1419]">All Users</h3>
+            <div className="flex flex-col md:flex-row gap-4 items-center">
+              <div className="flex-1">
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="Search users..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2 rounded-full border border-gray-200 focus:outline-none focus:border-blue-600"
+                  />
+                  <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
+                </div>
+              </div>
+              <div className="flex gap-2 md:gap-4">
+                <select
+                  value={selectedRole}
+                  onChange={(e) => setSelectedRole(e.target.value)}
+                  className="p-2 md:px-4 md:py-2 rounded-full border border-gray-200 focus:outline-none focus:border-blue-600"
+                >
+                  <option>All Roles</option>
+                  <option>Students</option>
+                  <option>Parents</option>
+                  <option>Mentors</option>
+                </select>
+              </div>
+            </div>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -273,11 +271,11 @@ const UserManagager = () => {
                         {user.status}
                       </span>
                     </td> */}
-                        <td className="px-6 py-4">
+                        <td className="px-6 py-4 text-center" >
                           <div className="flex space-x-2">
-                            <button className="text-blue-600 hover:text-[#0F1419] p-1">
+                            {/* <button className="text-blue-600 hover:text-[#0F1419] p-1">
                               <Edit className="w-4 h-4" />
-                            </button>
+                            </button> */}
                             <button className="text-red-500 hover:text-red-700 p-1">
                               <Trash2 className="w-4 h-4" />
                             </button>
