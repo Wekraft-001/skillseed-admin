@@ -188,10 +188,10 @@ const PaymentModal = ({ isOpen, onClose }) => {
                 className="w-full bg-soft-gray border-2 border-gray-200 rounded-2xl px-4 py-3 focus:outline-none focus:border-primary-blue transition"
               >
                 <option value="">Select Method</option>
-                <option value="credit-card">Credit Card</option>
-                <option value="mobile-money">Mobile Money</option>
-                <option value="bank-transfer">Bank Transfer</option>
-                <option value="paypal">PayPal</option>
+                <option value="card">Credit Card</option>
+                <option value="mobilemoneyrwanda">Mobile Money</option>
+                {/* <option value="bank-transfer">Bank Transfer</option> */}
+                {/* <option value="paypal">PayPal</option> */}
               </select>
             </div>
           </div>
