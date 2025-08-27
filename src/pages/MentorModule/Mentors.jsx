@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Input } from "../components/ui/formComponents/input";
+import { Input } from "../../components/ui/formComponents/input";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import {
@@ -12,9 +12,10 @@ import {
   Star,
   Users,
 } from "lucide-react";
-import MentorOnboardingModal from "../components/modals/MentorOnboardingModal";
-import { SkeletonCard, SkeletonList } from "../components/LoadingSkeleton";
-import { Card } from "../components/ui/card";
+import MentorOnboardingModal from "../../components/modals/MentorOnboardingModal";
+import { SkeletonCard, SkeletonList } from "../../components/LoadingSkeleton";
+import { Card } from "../../components/ui/card";
+import { useNavigate } from "react-router-dom";
 
 const Mentors = () => {
   const apiURL = import.meta.env.VITE_REACT_APP_BASE_URL;
@@ -23,6 +24,7 @@ const Mentors = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
+  const navigate = useNavigate();
 
   const mentors1 = [
     {
@@ -106,6 +108,12 @@ const Mentors = () => {
   const currentMentors = mentors.slice(indexOfFirstUser, indexOfLastUser);
   const totalPages = Math.ceil(mentors.length / itemsPerPage);
 
+  const handleViewMentor = (mentorId) => {
+    navigate("/mentors/mentor-details");
+  };
+  const handleViewCredentails = (mentorId) => {
+    navigate("/mentors/credentials");
+  };
   return (
     <div className="bg-[#F5F7FA] min-h-[calc(100vh-80px)] relative p-5 md:p-8 w-full">
       {/* Decorative Bubbles */}
@@ -140,6 +148,13 @@ const Mentors = () => {
               className="bg-white border border-gray-200 rounded-full px-5 py-2 focus:outline-none focus:border-blue-600 md:w-64 shadow-sm text-gray-700 w-full"
             />
           </div>
+          <button
+            className="flex items-center bg-blue-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-blue-400/90"
+            onClick={handleViewCredentails}
+          >
+            <Eye className="w-4 h-4 mr-2" />
+            View Credentials
+          </button>
           {/* <div className="flex items-center gap-3">
             <span className="ml-4 text-gray-500 font-medium">View:</span>
             <button
@@ -297,6 +312,7 @@ const Mentors = () => {
                       <td className="px-6 py-4 flex items-center justify-center gap-2">
                         <button
                           size="icon"
+                          onClick={() => handleViewMentor(mentor.id)}
                           className="rounded-full bg-blue-600 text-white w-8 h-8 hover:bg-blue-600/90 flex items-center justify-center"
                         >
                           <Eye className="w-3 h-3" />
@@ -427,7 +443,10 @@ const Mentors = () => {
                         </span>
                       </td>
                       <td className="px-6 py-4 flex items-center justify-center gap-2">
-                        <button className="rounded-full bg-blue-600 text-white w-8 h-8 hover:bg-blue-600/90 flex items-center justify-center">
+                        <button
+                          onClick={() => handleViewMentor(mentor.id)}
+                          className="rounded-full bg-blue-600 text-white w-8 h-8 hover:bg-blue-600/90 flex items-center justify-center"
+                        >
                           <Eye className="w-3 h-3" />
                         </button>
                       </td>

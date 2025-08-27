@@ -10,6 +10,9 @@ import {
   ChevronLeft,
   ChevronRight,
   Eye,
+  RefreshCw,
+  User,
+  GraduationCap,
 } from "lucide-react";
 import PaymentModal from "../components/modals/PaymentModal";
 import moment from "moment";
@@ -18,10 +21,12 @@ const Transactions = () => {
   const apiURL = import.meta.env.VITE_REACT_APP_BASE_URL;
   const token = localStorage.getItem("adminToken");
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] = useState(null);
+  const [activeTab, setActiveTab] = useState("school-subscriptions");
   const revenueChartRef = useRef(null);
   const paymentChartRef = useRef(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 5;
 
   const fetchTransactions = async () => {
     const res = await axios.get(`${apiURL}/transactions/all`, {
@@ -45,11 +50,48 @@ const Transactions = () => {
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  const totalPages = Math.ceil(transactions.length / itemsPerPage);
-  const paginatedTransactions = transactions.slice(
+  // Separate transactions based on type and presence of school vs parent/student
+  const schoolSubscriptions = transactions.filter(
+    (trx) =>
+      trx.transactionType === "subscription" &&
+      trx.school &&
+      !trx.parent &&
+      !trx.student
+  );
+
+  const userTransactions = transactions.filter(
+    (trx) =>
+      trx.transactionType === "student-registration" ||
+      trx.parent ||
+      trx.student
+  );
+
+  // Get current transactions based on active tab
+  const currentTransactions =
+    activeTab === "school-subscriptions"
+      ? schoolSubscriptions
+      : userTransactions;
+
+  const totalPages = Math.ceil(currentTransactions.length / itemsPerPage);
+  const paginatedTransactions = currentTransactions.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
+
+  // Reset pagination when tab changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeTab]);
+
+  const handleAddNewPayment = () => {
+    setSelectedTransaction(null);
+    setShowPaymentModal(true);
+  };
+
+  const handleRenewPayment = (transaction) => {
+    setSelectedTransaction(transaction);
+    setShowPaymentModal(true);
+  };
 
   useEffect(() => {
     if (!transactions || transactions.length === 0) return;
@@ -131,13 +173,10 @@ const Transactions = () => {
       paymentChartRef.current = new Chart(paymentCtx, {
         type: "doughnut",
         data: {
-          // labels: ["Credit Card", "Mobile Money", "Bank Transfer", "PayPal"],
           labels,
           datasets: [
             {
-              // data: [45, 30, 15, 10],
               data,
-              // backgroundColor: ["#1A73E8", "#FFC107", "#10B981", "#F59E0B"],
               backgroundColor: colors.slice(0, labels.length),
               borderWidth: 0,
               cutout: "70%",
@@ -170,7 +209,8 @@ const Transactions = () => {
         paymentChartRef.current.destroy();
       }
     };
-  }, []);
+  }, [transactions]);
+
   return (
     <div className="bg-[#F5F7FA] min-h-[calc(100vh-80px)]">
       <div id="main-content" className=" p-6 md:p-8 w-full max-w-[1800px]">
@@ -185,7 +225,8 @@ const Transactions = () => {
           </div>
           <div className="flex items-center space-x-4">
             <button
-              onClick={() => setShowPaymentModal(true)}
+              //   onClick={() => setShowPaymentModal(true)}
+              onClick={handleAddNewPayment}
               className="text-white p-2 md:px-6 md:py-3 rounded-full font-medium text-sm md:text-base md:font-semibold flex items-center gap-2 bg-[#092043] transition"
             >
               <svg
@@ -206,7 +247,7 @@ const Transactions = () => {
         {/* Cards */}
         <div
           id="stats-overview"
-          className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"
+          className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
         >
           {/* Revenue Card */}
           <div
@@ -222,63 +263,67 @@ const Transactions = () => {
                 +12.5%
               </span>
             </div>
-            <h3 className="text-2xl font-bold text-deep-navy">$45,230</h3>
+            <h3 className="text-2xl font-bold text-deep-navy">
+              $
+              {transactions
+                .reduce((sum, trx) => sum + (trx.amount || 0), 0)
+                .toLocaleString()}
+            </h3>
             <p className="text-gray-500 text-sm">Total Revenue</p>
           </div>
-          {/* Transactions Card */}
+
+          {/* School Subscriptions Card */}
           <div
-            id="transactions-card"
+            id="school-subscriptions-card"
             className="bg-white rounded-2xl p-6 shadow-lg relative overflow-hidden"
           >
             <div className="bubble bubble-pink absolute -top-4 -right-4 w-16 h-16"></div>
             <div className="flex items-center justify-between mb-4">
               <div className="bg-[#FAB548]/25 p-3 rounded-full">
-                <CreditCard className="text-[#FAB548] w-6 h-6" />
+                <GraduationCap className="text-[#FAB548] w-6 h-6" />
               </div>
-              {/* <span className="text-green-500 text-sm font-semibold">
-                +8.2%
-              </span> */}
+            </div>
+            <h3 className="text-2xl font-bold text-deep-navy">
+              {schoolSubscriptions.length}
+            </h3>
+            <p className="text-gray-500 text-sm">School Subscriptions</p>
+          </div>
+
+          {/* User Transactions Card */}
+          <div
+            id="user-transactions-card"
+            className="bg-white rounded-2xl p-6 shadow-lg relative overflow-hidden"
+          >
+            <div className="bubble absolute -top-4 -right-4 w-16 h-16"></div>
+            <div className="flex items-center justify-between mb-4">
+              <div className="bg-green-500/10 p-3 rounded-full">
+                <User className="text-green-500 w-6 h-6" />
+              </div>
+            </div>
+            <h3 className="text-2xl font-bold text-deep-navy">
+              {userTransactions.length}
+            </h3>
+            <p className="text-gray-500 text-sm">User Transactions</p>
+          </div>
+
+          {/* Total Transactions Card */}
+          <div
+            id="total-transactions-card"
+            className="bg-white rounded-2xl p-6 shadow-lg relative overflow-hidden"
+          >
+            <div className="bubble bubble-yellow absolute -top-4 -right-4 w-16 h-16"></div>
+            <div className="flex items-center justify-between mb-4">
+              <div className="bg-purple-500/10 p-3 rounded-full">
+                <CreditCard className="text-purple-500 w-6 h-6" />
+              </div>
             </div>
             <h3 className="text-2xl font-bold text-deep-navy">
               {transactions.length}
             </h3>
             <p className="text-gray-500 text-sm">Total Transactions</p>
           </div>
-          {/* Subscriptions Card */}
-          <div
-            id="subscriptions-card"
-            className="bg-white rounded-2xl p-6 shadow-lg relative overflow-hidden"
-          >
-            <div className="bubble absolute -top-4 -right-4 w-16 h-16"></div>
-            <div className="flex items-center justify-between mb-4">
-              <div className="bg-green-500/10 p-3 rounded-full">
-                <Users className="text-green-500 w-6 h-6" />
-              </div>
-              {/* <span className="text-green-500 text-sm font-semibold">
-                +15.3%
-              </span> */}
-            </div>
-            <h3 className="text-2xl font-bold text-deep-navy">
-              {transactions.length}
-            </h3>
-            <p className="text-gray-500 text-sm">Active Subscriptions</p>
-          </div>
-          {/* Refunds Card */}
-          {/* <div
-            id="refunds-card"
-            className="bg-white rounded-2xl p-6 shadow-lg relative overflow-hidden"
-          >
-            <div className="bubble bubble-yellow absolute -top-4 -right-4 w-16 h-16"></div>
-            <div className="flex items-center justify-between mb-4">
-              <div className="bg-red-500/10 p-3 rounded-full">
-                <Undo2 className="text-red-500 w-6 h-6" />
-              </div>
-              <span className="text-red-500 text-sm font-semibold">-2.1%</span>
-            </div>
-            <h3 className="text-2xl font-bold text-deep-navy">23</h3>
-            <p className="text-gray-500 text-sm">Refunds</p>
-          </div> */}
         </div>
+
         {/* Charts */}
         <div
           id="charts-section"
@@ -316,140 +361,187 @@ const Transactions = () => {
             </div>
           </div>
         </div>
-        {/* Transactions Filter */}
-        {/* <div
-          id="filters-section"
-          className="bg-white rounded-2xl p-6 shadow-lg mb-8"
-        >
-          <h3 className="text-xl font-bold text-deep-navy mb-6">
-            Filters & Export
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Date Range
-              </label>
-              <input
-                type="date"
-                className="w-full bg-soft-gray border border-gray-200 rounded-full px-4 py-2 focus:outline-none focus:border-primary-blue"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Transaction Type
-              </label>
-              <select className="w-full bg-soft-gray border border-gray-200 rounded-full px-4 py-2 focus:outline-none focus:border-primary-blue">
-                <option>All Types</option>
-                <option>Subscription</option>
-                <option>One-time Payment</option>
-                <option>Refund</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                School
-              </label>
-              <select className="w-full bg-soft-gray border border-gray-200 rounded-full px-4 py-2 focus:outline-none focus:border-primary-blue">
-                <option>All Schools</option>
-                <option>Bright Future Academy</option>
-                <option>Starlight Secondary</option>
-                <option>Unity Learning Center</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Status
-              </label>
-              <select className="w-full bg-soft-gray border border-gray-200 rounded-full px-4 py-2 focus:outline-none focus:border-primary-blue">
-                <option>All Status</option>
-                <option>Completed</option>
-                <option>Pending</option>
-                <option>Failed</option>
-              </select>
-            </div>
-          </div>
-          <div className="flex gap-4">
-            <button className="bg-[#3C91BA] text-white px-6 py-3 rounded-full font-semibold flex items-center gap-2 hover:bg-[#3C91BA]/35 transition">
-              <i className="fa-solid fa-filter"></i>
-              Apply Filters
-            </button>
-            <button className="bg-[#FAB548] text-indigo-950 px-6 py-3 rounded-full font-semibold flex items-center gap-2 hover:bg-[#FAB548]/35 transition cursor-pointer">
-              <i className="fa-solid fa-download"></i>
-              Export CSV
-            </button>
-          </div>
-        </div> */}
 
-        {/* Transactions Table */}
+        {/* Transactions Table with Tabs */}
         <div
           id="transactions-table"
           className="bg-white rounded-2xl shadow-lg overflow-hidden"
         >
           <div className="p-6">
-            <h3 className="text-xl font-bold text-deep-navy">
-              Recent Transactions
-            </h3>
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-bold text-deep-navy">Transactions</h3>
+
+              {/* Tab Navigation */}
+              <div className="flex bg-gray-100 rounded-lg p-1">
+                <button
+                  onClick={() => setActiveTab("school-subscriptions")}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    activeTab === "school-subscriptions"
+                      ? "bg-white text-[#3C91BA] shadow-sm"
+                      : "text-gray-600 hover:text-[#3C91BA]"
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <GraduationCap className="w-4 h-4" />
+                    School Subscriptions
+                  </div>
+                </button>
+                <button
+                  onClick={() => setActiveTab("user-transactions")}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    activeTab === "user-transactions"
+                      ? "bg-white text-[#3C91BA] shadow-sm"
+                      : "text-gray-600 hover:text-[#3C91BA]"
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <User className="w-4 h-4" />
+                    User Transactions
+                  </div>
+                </button>
+              </div>
+            </div>
           </div>
+
           <div className="overflow-x-auto">
             <table className="min-w-full text-left">
               <thead>
                 <tr className="bg-[#3C91BA]/5 text-deep-navy text-sm font-semibold">
                   <th className="px-6 py-4">Transaction ID</th>
-                  <th className="px-6 py-4">School</th>
-                  <th className="px-6 py-4">Amount</th>
-                  <th className="px-6 py-4">Type</th>
-                  <th className="px-6 py-4">Date</th>
-                  {/* <th className="px-6 py-4">Status</th> */}
-                  <th className="px-6 py-4">Actions</th>
+                  {activeTab === "school-subscriptions" ? (
+                    <>
+                      <th className="px-6 py-4">School</th>
+                      <th className="px-6 py-4">Amount</th>
+                      <th className="px-6 py-4">Kids</th>
+                      <th className="px-6 py-4">Payment Method</th>
+                      <th className="px-6 py-4">Date</th>
+                      <th className="px-6 py-4">Actions</th>
+                    </>
+                  ) : (
+                    <>
+                      <th className="px-6 py-4">Parent/Student</th>
+                      <th className="px-6 py-4">Amount</th>
+                      {/* <th className="px-6 py-4">Type</th> */}
+                      <th className="px-6 py-4">Payment Method</th>
+                      <th className="px-6 py-4">Date</th>
+                      <th className="px-6 py-4">Actions</th>
+                    </>
+                  )}
                 </tr>
               </thead>
               <tbody>
                 {paginatedTransactions.map((trx) => (
-                  <tr className=" hover:bg-primary-blue/5 transition">
+                  <tr
+                    key={trx._id}
+                    className=" hover:bg-primary-blue/5 transition"
+                  >
                     <td className="px-6 py-4 font-mono text-sm text-gray-600">
                       #TXN-{trx._id?.slice(0, 5)}
                     </td>
-                    <td className="px-6 py-4 flex items-center gap-3">
-                      <img
-                        src={trx?.school?.logoUrl}
-                        className="w-8 h-8 rounded-full border border-primary-blue object-cover"
-                        alt="school avatar"
-                      />
-                      <span className="font-medium text-deep-navy">
-                        {trx?.school?.schoolName}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 font-bold text-green-600">
-                      ${trx?.amount}
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="bg-primary-blue/10 text-primary-blue px-3 py-1 rounded-full text-xs font-medium">
-                        {trx?.transactionType}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-gray-600">
-                      {moment(trx?.createdAt).format("MMM D, YYYY • h:mm A")}
-                    </td>
-                    {/* <td className="px-6 py-4">
-                      <span className="bg-green-500/10 text-green-600 px-3 py-1 rounded-full text-xs font-medium">
-                        Completed
-                      </span>
-                    </td> */}
-                    <td className="px-6 py-4">
-                      <button className="rounded-full bg-[#3C91BA] text-white w-8 h-8 flex items-center justify-center shadow hover:bg-primary-blue/90 transition">
-                        <Eye className="text-white w-5 h-5" />
-                      </button>
-                    </td>
+
+                    {activeTab === "school-subscriptions" ? (
+                      <>
+                        <td className="px-6 py-4 flex items-center gap-3">
+                          <img
+                            src={
+                              trx?.school?.logoUrl || "/default-school-logo.png"
+                            }
+                            className="w-8 h-8 rounded-full border border-primary-blue object-cover"
+                            alt="school avatar"
+                          />
+                          <span className="font-medium text-deep-navy">
+                            {trx?.school?.schoolName || trx?.schoolName}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 font-bold text-green-600">
+                          ${trx?.amount}
+                        </td>
+                        <td className="px-6 py-4 text-gray-600">
+                          {trx?.numberOfKids}
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
+                            {trx?.paymentMethod?.replace("-", " ")}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-gray-600">
+                          {moment(
+                            trx?.createdAt || trx?.transactionDate
+                          ).format("MMM D, YYYY • h:mm A")}
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-2">
+                            <button className="rounded-full bg-[#3C91BA] text-white w-8 h-8 flex items-center justify-center shadow hover:bg-primary-blue/90 transition">
+                              <Eye className="text-white w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => handleRenewPayment(trx)}
+                              className="rounded-full bg-green-500 text-white w-8 h-8 flex items-center justify-center shadow hover:bg-green-600 transition"
+                              title="Renew Subscription"
+                            >
+                              <RefreshCw className="text-white w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </>
+                    ) : (
+                      <>
+                        <td className="px-6 py-4">
+                          <div className="flex flex-col">
+                            {trx?.parent && (
+                              <span className="font-medium text-deep-navy">
+                                {trx?.parent?.firstName} {trx?.parent?.lastName}
+                              </span>
+                            )}
+                            {trx?.student && (
+                              <span className="text-sm text-gray-600">
+                                Student: {trx?.student?.firstName}{" "}
+                                {trx?.student?.lastName}
+                                {trx?.student?.grade &&
+                                  ` (Grade ${trx?.student?.grade})`}
+                              </span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 font-bold text-green-600">
+                          ${trx?.amount}
+                        </td>
+                        {/* <td className="px-6 py-4">
+                          <span className="bg-primary-blue/10 text-primary-blue px-3 py-1 rounded-full text-xs font-medium">
+                            {trx?.transactionType?.replace("-", " ")}
+                          </span>
+                        </td> */}
+                        <td className="px-6 py-4">
+                          <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs font-medium">
+                            {trx?.paymentMethod?.replace("-", " ")}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-gray-600">
+                          {moment(
+                            trx?.createdAt || trx?.transactionDate
+                          ).format("MMM D, YYYY • h:mm A")}
+                        </td>
+                        <td className="px-6 py-4">
+                          <button className="rounded-full bg-[#3C91BA] text-white w-8 h-8 flex items-center justify-center shadow hover:bg-primary-blue/90 transition">
+                            <Eye className="text-white w-4 h-4" />
+                          </button>
+                        </td>
+                      </>
+                    )}
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
+
           <div className="p-6 flex justify-between items-center">
             <span className="text-gray-600 text-sm">
               Showing {(currentPage - 1) * itemsPerPage + 1}–
-              {Math.min(currentPage * itemsPerPage, transactions.length)} of{" "}
-              {transactions.length} transactions
+              {Math.min(currentPage * itemsPerPage, currentTransactions.length)}{" "}
+              of {currentTransactions.length}{" "}
+              {activeTab === "school-subscriptions"
+                ? "school subscriptions"
+                : "user transactions"}
             </span>
 
             <div className="flex gap-2">
@@ -489,9 +581,21 @@ const Transactions = () => {
         </div>
       </div>
       {/* Payment Modal */}
-      <PaymentModal
+      {/* <AddPaymentModal
         isOpen={showPaymentModal}
         onClose={() => setShowPaymentModal(false)}
+      />
+      <RenewPaymentModal
+        isOpen={showRenewPaymentModal}
+        onClose={() => setShowRenewPaymentModal(false)}
+      /> */}
+      <PaymentModal
+        isOpen={showPaymentModal}
+        onClose={() => {
+          setShowPaymentModal(false);
+          setSelectedTransaction(null);
+        }}
+        transaction={selectedTransaction}
       />
     </div>
   );

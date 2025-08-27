@@ -13,6 +13,8 @@ import {
   Settings,
   BarChart3,
   FileText,
+  MessageSquare,
+  Globe,
 } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "../lib/utils";
@@ -98,7 +100,16 @@ const Sidebar = () => {
       label: "Schools",
       path: "/schools",
     },
-
+    {
+      icon: <UserCheck className="w-5 h-5 mr-2" />,
+      label: "Mentors",
+      path: "/mentors",
+    },
+    {
+      icon: <Globe className="w-5 h-5 mr-2" />,
+      label: "Communities",
+      path: "/communities",
+    },
     {
       icon: <BarChart3 className="w-5 h-5 mr-2" />,
       label: "Transactions",
@@ -115,11 +126,7 @@ const Sidebar = () => {
       label: "Content",
       path: "/content",
     },
-    {
-      icon: <UserCheck className="w-5 h-5 mr-2" />,
-      label: "Mentors",
-      path: "/mentors",
-    },
+
     {
       icon: <Calendar className="w-5 h-5 mr-2" />,
       label: "Events",
@@ -131,14 +138,19 @@ const Sidebar = () => {
       path: "/progress",
     },
     {
-      icon: <Bell className="w-5 h-5 mr-2" />,
-      label: "Notifications",
-      path: "/notifications",
+      icon: <MessageSquare className="w-5 h-5 mr-2" />,
+      label: "Feedback",
+      path: "/feedback",
     },
     {
       icon: <Settings className="w-5 h-5 mr-2" />,
       label: "Settings",
       path: "/settings",
+    },
+    {
+      icon: <Bell className="w-5 h-5 mr-2" />,
+      label: "Notifications",
+      path: "/notifications",
     },
   ];
   const renderSubMenu = (path) => {

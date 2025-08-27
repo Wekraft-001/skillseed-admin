@@ -224,7 +224,7 @@ const Header = () => {
             <MenuItems className="absolute right-0 z-50 mt-2 w-[300px] origin-top-right rounded-md bg-white py-1 shadow-lg focus:outline-none font-primaryRegular">
               <MenuItem>
                 <Link
-                  to="/dashboard/profile"
+                  to="/profile"
                   className="block px-4 py-2 text-sm"
                 >
                   <div className="flex items-center gap-2 text-base">

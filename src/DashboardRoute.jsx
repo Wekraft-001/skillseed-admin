@@ -12,10 +12,16 @@ import Settings from "./pages/Settings";
 import Notifications from "./pages/Notifications";
 import ProgressTracking from "./pages/ProgressTrack";
 import Events from "./pages/Events";
-import Mentors from "./pages/Mentors";
+import Mentors from "./pages/MentorModule/Mentors";
+import MentorDetails from "./pages/MentorModule/MentorDetails";
 import Transactions from "./pages/Transactions";
 import "react-loading-skeleton/dist/skeleton.css";
 import Content from "./pages/Content";
+import Profile from "./pages/Profile";
+import Feedback from "./pages/Feedback";
+import Communities from "./pages/Communities";
+import SchoolDetails from "./pages/SchoolDetails";
+import MentorCredentials from "./pages/MentorModule/MentorCredentials";
 
 const queryClient = new QueryClient();
 
@@ -29,14 +35,29 @@ const App = () => (
               <Route path="home" element={<Home />} />
               <Route path="users" element={<UserManagager />} />
               <Route path="schools" element={<Schools />} />
+              <Route
+                path="schools/school-details"
+                element={<SchoolDetails />}
+              />
+              <Route path="communities" element={<Communities />} />
               <Route path="challenges" element={<Challenges />} />
               <Route path="mentors" element={<Mentors />} />
+              <Route
+                path="mentors/mentor-details"
+                element={<MentorDetails />}
+              />
+               <Route
+                path="mentors/credentials"
+                element={<MentorCredentials />}
+              />
               <Route path="events" element={<Events />} />
               <Route path="transactions" element={<Transactions />} />
               <Route path="progress" element={<ProgressTracking />} />
               <Route path="notifications" element={<Notifications />} />
               <Route path="content" element={<Content />} />
+              <Route path="feedback" element={<Feedback />} />
               <Route path="settings" element={<Settings />} />
+              <Route path="profile" element={<Profile />} />
             </Route>
           </Routes>
         </QueryClientProvider>

@@ -16,6 +16,7 @@ import {
 import { Card } from "../components/ui/card";
 import SchoolOnboardingModal from "../components/modals/SchoolOnboardingModal";
 import { SkeletonCard } from "../components/LoadingSkeleton";
+import { useNavigate } from "react-router-dom";
 
 const Schools = () => {
   const apiURL = import.meta.env.VITE_REACT_APP_BASE_URL;
@@ -23,51 +24,9 @@ const Schools = () => {
   const [viewMode, setViewMode] = useState("grid");
   const [isOnboardingModalOpen, setIsOnboardingModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  // const [schools, setSchools] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
-
-  const schools1 = [
-    {
-      id: 1,
-      name: "Bright Future Academy",
-      location: "Lagos, Nigeria",
-      type: "Primary",
-      students: 420,
-      teachers: 30,
-      image:
-        "https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg",
-      email: "info@brightfuture.com",
-      clubs: ["Science Club", "Math League"],
-      typeColor: "bg-[#FFC107]/90 text-[#0F1419]",
-    },
-    {
-      id: 2,
-      name: "Starlight Secondary School",
-      location: "Accra, Ghana",
-      type: "Secondary",
-      students: 620,
-      teachers: 45,
-      image:
-        "https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg",
-      email: "contact@starlight.edu",
-      clubs: ["Tech Innovators", "Young Entrepreneurs"],
-      typeColor: "bg-[#1A73E8]/90 text-white",
-    },
-    {
-      id: 3,
-      name: "Unity Learning Center",
-      location: "Nairobi, Kenya",
-      type: "Combined",
-      students: 880,
-      teachers: 70,
-      image:
-        "https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg",
-      email: "hello@unitycenter.org",
-      clubs: ["Entrepreneurship", "Mathematics"],
-      typeColor: "bg-[#FFC107]/90 text-[#0F1419]",
-    },
-  ];
+  const navigate = useNavigate();
 
   const handleOpenOnboardingModal = () => {
     setIsOnboardingModalOpen(true);
@@ -75,6 +34,10 @@ const Schools = () => {
 
   const handleCloseOnboardingModal = () => {
     setIsOnboardingModalOpen(false);
+  };
+
+  const handleViewSchool = (schoolId) => {
+    navigate("/schools/school-details");
   };
 
   const getSchoolTypeColor = (schoolType) => {
@@ -90,32 +53,7 @@ const Schools = () => {
     }
   };
 
-  // useEffect(() => {
-  //   const getSchools = () => {
-  //     setLoading(true);
-  //     axios
-  //       .get(`${apiURL}/schools/all`, {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //           "Content-type": "application/json; charset=UTF-8",
-  //         },
-  //       })
-  //       .then((response) => {
-  //         console.log(response.data, "Schools");
-  //         setSchools(response.data);
-  //         setLoading(false);
-  //       })
-  //       .catch((error) => {
-  //         console.error("Error fetching vendors:", error);
-  //         setLoading(false);
-  //       });
-  //   };
-
-  //   getSchools();
-  // }, []);
-
   // Calculate pagination
-
   const fetchSchools = async () => {
     const res = await axios.get(`${apiURL}/schools/all`, {
       headers: {
@@ -278,7 +216,10 @@ const Schools = () => {
                   ))}
                 </div> */}
                       <div className="flex items-center gap-3">
-                        <button className="flex items-center justify-center rounded-full bg-[#1A73E8] text-white w-10 h-10 hover:bg-[#1A73E8]/90">
+                        <button
+                          onClick={() => handleViewSchool(school.id)}
+                          className="flex items-center justify-center rounded-full bg-[#1A73E8] text-white w-10 h-10 hover:bg-[#1A73E8]/90"
+                        >
                           <Eye className="w-4 h-4" />
                         </button>
                         <button className="flex items-center justify-center rounded-full bg-[#FFC107] text-[#0F1419] w-10 h-10 hover:bg-[#FFC107]/80">
@@ -404,7 +345,10 @@ const Schools = () => {
                     </td> */}
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-2">
-                            <button className="flex items-center justify-center rounded-full bg-[#1A73E8] text-white w-8 h-8 hover:bg-[#1A73E8]/90">
+                            <button
+                              onClick={() => handleViewSchool(school.id)}
+                              className="flex items-center justify-center rounded-full bg-[#1A73E8] text-white w-8 h-8 hover:bg-[#1A73E8]/90"
+                            >
                               <Eye className="w-3 h-3" />
                             </button>
                             <button className="flex items-center justify-center rounded-full bg-[#FFC107] text-[#0F1419] w-8 h-8 hover:bg-[#FFC107]/80">
