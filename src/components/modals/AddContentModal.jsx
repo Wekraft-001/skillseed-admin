@@ -15,16 +15,99 @@ import { Button } from "../ui/button";
 import Select from "react-select";
 import { Label } from "../ui/label";
 
-const options = [
+const categoryOptions = [
   { value: "education", label: "Education" },
   { value: "science", label: "Science" },
   { value: "mathematics", label: "Mathematics" },
   { value: "literature", label: "Literature" },
+  { value: "technology", label: "Technology" },
 ];
+
+const targetAudienceOptions = [
+  { value: "Parents", label: "Parents" },
+  { value: "Mentors", label: "Mentors" },
+  { value: "Schools", label: "Schools" },
+];
+
 const AddContentModal = ({ isOpen, onClose }) => {
-  const [contentType, setContentType] = useState("video");
+  const apiURL = import.meta.env.VITE_REACT_APP_BASE_URL;
+  const token = localStorage.getItem("adminToken");
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    type: "video",
+    category: null,
+    targetAudience: null,
+    videoUrl: "",
+    bookUrl: "",
+    author: "",
+    thumbnailUrl: "",
+  });
   const [isPublished, setIsPublished] = useState(false);
-  const [selectedOption, setSelectedOption] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleInputChange = (field, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      // Prepare payload according to API structure
+      const payload = {
+        title: formData.title,
+        description: formData.description,
+        type: formData.type,
+        // category: formData.category?.value || "",
+        targetAudience: formData.targetAudience?.value,
+        author: formData.author,
+        thumbnailUrl: formData.thumbnailUrl,
+        // Include the appropriate URL based on content type
+        ...(formData.type === "video"
+          ? { videoUrl: formData.videoUrl }
+          : { bookUrl: formData.bookUrl }),
+      };
+
+      const response = await fetch(`${apiURL}/content`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (response.ok) {
+        // Reset form and close modal on success
+        setFormData({
+          title: "",
+          description: "",
+          type: "video",
+          category: null,
+          targetAudience: null,
+          videoUrl: "",
+          bookUrl: "",
+          author: "",
+          thumbnailUrl: "",
+        });
+        setIsPublished(false);
+        onClose();
+        // You might want to show a success message here
+      } else {
+        throw new Error("Failed to create content");
+      }
+    } catch (error) {
+      console.error("Error creating content:", error);
+      // You might want to show an error message to the user
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -37,38 +120,29 @@ const AddContentModal = ({ isOpen, onClose }) => {
           </DialogTitle>
         </DialogHeader>
 
-        <div className="grid gap-4 py-4 ">
+        <form onSubmit={handleSubmit} className="grid gap-4">
           <div className="space-y-2">
             <Label htmlFor="content-type">Content Type</Label>
-            <div className="grid grid-cols-3 gap-4 ">
+            <div className="grid grid-cols-2 gap-4">
               {[
                 { type: "video", icon: Video, label: "Video", color: "purple" },
                 { type: "pdf", icon: FileText, label: "PDF", color: "yellow" },
-                {
-                  type: "article",
-                  icon: BookOpen,
-                  label: "Article",
-                  color: "green",
-                },
               ].map((item) => {
-                const isActive = contentType === item.type;
+                const isActive = formData.type === item.type;
                 return (
                   <button
                     key={item.type}
                     type="button"
-                    variant={isActive ? "secondary" : "outline"}
-                    className={`flex flex-col h-auto py-6 ${
+                    className={`flex flex-col items-center justify-center rounded h-auto py-6 border-2 transition-colors ${
                       isActive
                         ? `bg-${item.color}-50 border-${item.color}-200 text-${item.color}-700`
-                        : ""
+                        : "border-gray-200 hover:border-gray-300"
                     }`}
-                    onClick={() => setContentType(item.type)}
+                    onClick={() => handleInputChange("type", item.type)}
                   >
                     <item.icon
                       className={`w-8 h-8 mb-2 ${
-                        isActive
-                          ? `text-${item.color}-600`
-                          : `text-${item.color}-400`
+                        isActive ? `text-${item.color}-600` : `text-gray-400`
                       }`}
                     />
                     <span className="text-sm font-medium">{item.label}</span>
@@ -78,96 +152,138 @@ const AddContentModal = ({ isOpen, onClose }) => {
             </div>
           </div>
 
-          {contentType !== "article" ? (
-            <div className="border-2 border-dashed border-border rounded-xl p-8 text-center">
-              <div className="max-w-xs mx-auto">
-                <Upload className="w-10 h-10 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-foreground mb-1">
-                  {contentType === "video"
-                    ? "Upload your video"
-                    : "Upload your document"}
-                </h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Drag and drop your file here, or click to browse
-                </p>
-                <button type="button" variant="default" size="sm">
-                  Select File
-                </button>
-                <p className="text-xs text-muted-foreground mt-2">
-                  {contentType === "video"
-                    ? "Supported formats: MP4, MOV, AVI (Max 500MB)"
-                    : "Supported formats: PDF, DOCX, PPTX (Max 500MB)"}
-                </p>
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              <label htmlFor="article-content">Article Content</label>
-              <Textarea
-                id="article-content"
-                placeholder="Write your article content here..."
-                className="min-h-[200px]"
-              />
-            </div>
-          )}
-
           <div className="space-y-4">
             <div className="space-y-2">
-              <label htmlFor="title">Title</label>
-              <Input id="title" placeholder="Enter content title" />
+              <Label htmlFor="title">Title *</Label>
+              <Input
+                id="title"
+                placeholder="Enter content title"
+                value={formData.title}
+                onChange={(e) => handleInputChange("title", e.target.value)}
+                required
+              />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label htmlFor="category">Category</label>
+            <div className="space-y-2">
+              <Label htmlFor="author">Author *</Label>
+              <Input
+                id="author"
+                placeholder="Enter author name"
+                value={formData.author}
+                onChange={(e) => handleInputChange("author", e.target.value)}
+                required
+              />
+            </div>
+
+            <div className=" gap-4">
+              {/* <div className="space-y-2">
+                <Label htmlFor="category">Category *</Label>
                 <Select
-                  options={options}
-                  value={selectedOption}
-                  onChange={setSelectedOption}
+                  options={categoryOptions}
+                  value={formData.category}
+                  onChange={(option) => handleInputChange("category", option)}
                   placeholder="Select category"
                   isClearable
                 />
+              </div> */}
+              <div className="space-y-2">
+                <Label htmlFor="targetAudience">Target Audience</Label>
+                <Select
+                  options={targetAudienceOptions}
+                  value={formData.targetAudience}
+                  onChange={(option) =>
+                    handleInputChange("targetAudience", option)
+                  }
+                  placeholder="Select target audience"
+                  isClearable
+                />
               </div>
-              {contentType !== "article" && (
-                <div className="space-y-2">
-                  <label htmlFor="duration">Duration (minutes)</label>
-                  <Input id="duration" type="number" placeholder="e.g. 15" />
-                </div>
-              )}
+            </div>
+
+            {/* Content URL based on type */}
+            <div className="space-y-2">
+              <Label htmlFor="contentUrl">
+                {formData.type === "video" ? "Video URL *" : "Book/PDF URL *"}
+              </Label>
+              <Input
+                id="contentUrl"
+                type="url"
+                placeholder={
+                  formData.type === "video"
+                    ? "https://www.youtube.com/watch?v=..."
+                    : "https://example.com/document.pdf"
+                }
+                value={
+                  formData.type === "video"
+                    ? formData.videoUrl
+                    : formData.bookUrl
+                }
+                onChange={(e) =>
+                  handleInputChange(
+                    formData.type === "video" ? "videoUrl" : "bookUrl",
+                    e.target.value
+                  )
+                }
+                required
+              />
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="description">Description</label>
+              <Label htmlFor="thumbnailUrl">Thumbnail URL</Label>
+              <Input
+                id="thumbnailUrl"
+                type="url"
+                placeholder="https://example.com/thumbnail.jpg"
+                value={formData.thumbnailUrl}
+                onChange={(e) =>
+                  handleInputChange("thumbnailUrl", e.target.value)
+                }
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="description">Description *</Label>
               <Textarea
                 id="description"
                 placeholder="Enter content description"
                 rows={3}
+                value={formData.description}
+                onChange={(e) =>
+                  handleInputChange("description", e.target.value)
+                }
+                required
               />
             </div>
 
-            <div className="flex items-center space-x-2">
+            {/* <div className="flex items-center space-x-2">
               <Checkbox
                 id="publish"
                 checked={isPublished}
                 onCheckedChange={() => setIsPublished(!isPublished)}
               />
-              <label htmlFor="publish" className="text-sm font-normal">
+              <Label htmlFor="publish" className="text-sm font-normal">
                 Publish immediately
-              </label>
-            </div>
+              </Label>
+            </div> */}
           </div>
-        </div>
 
-        <DialogFooter>
-          <Button type="button" variant="outline" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button type="submit">
-            {contentType === "article" ? "Publish Article" : "Upload Content"}
-          </Button>
-        </DialogFooter>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onClose}
+              disabled={isSubmitting}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Creating..." : "Create Content"}
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );
 };
+
 export default AddContentModal;

@@ -493,16 +493,20 @@ const Content = () => {
         </div>
         <button
           onClick={() => setIsAddModalOpen(true)}
-          className="bg-primary-blue text-white px-6 py-3 rounded-full font-semibold hover:bg-primary-blue/90 transition flex items-center gap-2"
+          className="bg-[#FFC107] text-[#0F1419] px-6 py-3 rounded-full font-semibold hover:bg-[#FFC107]/60 transition flex items-center gap-2 cursor-pointer"
         >
           <Plus className="w-5 h-5" />
           Add Content
         </button>
       </header>
-
-      <div
+      {/* CONTENT STATS */}
+      {/* <div
         id="stats-overview"
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
+      > */}
+      <div
+        id="stats-overview"
+        className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
       >
         <div
           id="videos-card"
@@ -549,7 +553,7 @@ const Content = () => {
           <p className="text-gray-500 text-sm">Categories</p>
         </div>
 
-        <div
+        {/* <div
           id="downloads-card"
           className="bg-white rounded-2xl p-6 shadow-lg border border-soft-gray relative overflow-hidden"
         >
@@ -562,268 +566,14 @@ const Content = () => {
           </div>
           <h3 className="text-2xl font-bold text-deep-navy">12.4K</h3>
           <p className="text-gray-500 text-sm">Total Downloads</p>
-        </div>
-      </div>
-
-      {/* Hidden file input */}
-      <input
-        type="file"
-        ref={fileInputRef}
-        onChange={handleFileChange}
-        className="hidden"
-        accept={uploadType === "video" ? "video/*" : ".pdf"}
-      />
-
-      <div
-        id="upload-section"
-        className="bg-white rounded-2xl p-6 shadow-lg border border-soft-gray mb-8"
-      >
-        <h3 className="text-xl font-bold text-deep-navy mb-6">
-          Upload New Content
-        </h3>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Video Upload */}
-          <div
-            id="video-upload"
-            className={`border-2 border-dashed rounded-2xl p-8 text-center transition ${
-              uploadType === "video" && isUploading
-                ? "border-primary-blue/50 bg-primary-blue/5"
-                : "border-primary-blue/30 hover:border-primary-blue/50"
-            }`}
-          >
-            <div className="bg-primary-blue/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Video className="text-primary-blue w-6 h-6" />
-            </div>
-            <h4 className="text-lg font-semibold text-deep-navy mb-2">
-              Upload Video
-            </h4>
-            <p className="text-gray-500 mb-4">
-              {isUploading && uploadType === "video"
-                ? selectedFile?.name || "Uploading video..."
-                : "Drag and drop video files or click to browse"}
-            </p>
-
-            {isUploading && uploadType === "video" && (
-              <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
-                <div
-                  className="bg-primary-blue h-2.5 rounded-full transition-all duration-300"
-                  style={{ width: `${uploadProgress}%` }}
-                ></div>
-              </div>
-            )}
-
-            <button
-              onClick={() => triggerFileInput("video")}
-              disabled={isUploading && uploadType === "video"}
-              className="bg-primary-blue text-white px-6 py-3 rounded-full font-semibold hover:bg-primary-blue/90 transition disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isUploading && uploadType === "video"
-                ? "Uploading..."
-                : "Choose Video Files"}
-            </button>
-            <p className="text-xs text-gray-400 mt-2">
-              MP4, WebM, or QuickTime • Max 500MB
-            </p>
-          </div>
-
-          {/* PDF Upload */}
-          <div
-            id="pdf-upload"
-            className={`border-2 border-dashed rounded-2xl p-8 text-center transition ${
-              uploadType === "pdf" && isUploading
-                ? "border-accent-yellow/50 bg-accent-yellow/5"
-                : "border-accent-yellow/30 hover:border-accent-yellow/50"
-            }`}
-          >
-            <div className="bg-accent-yellow/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-              <FileText className="text-accent-yellow w-6 h-6" />
-            </div>
-            <h4 className="text-lg font-semibold text-deep-navy mb-2">
-              Upload Books/PDFs
-            </h4>
-            <p className="text-gray-500 mb-4">
-              {isUploading && uploadType === "pdf"
-                ? selectedFile?.name || "Uploading PDF..."
-                : "Drag and drop PDF files or click to browse"}
-            </p>
-
-            {isUploading && uploadType === "pdf" && (
-              <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
-                <div
-                  className="bg-accent-yellow h-2.5 rounded-full transition-all duration-300"
-                  style={{ width: `${uploadProgress}%` }}
-                ></div>
-              </div>
-            )}
-
-            <button
-              onClick={() => triggerFileInput("pdf")}
-              disabled={isUploading && uploadType === "pdf"}
-              className="bg-accent-yellow text-deep-navy px-6 py-3 rounded-full font-semibold hover:bg-accent-yellow/90 transition disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isUploading && uploadType === "pdf"
-                ? "Uploading..."
-                : "Choose PDF Files"}
-            </button>
-            <p className="text-xs text-gray-400 mt-2">PDF format • Max 50MB</p>
-          </div>
-        </div>
-      </div>
-
-      <div
-        id="categories-section"
-        className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8"
-      >
-        <div
-          id="categories-list"
-          className="lg:col-span-1 bg-white rounded-2xl p-6 shadow-lg border border-soft-gray"
-        >
-          <h3 className="text-xl font-bold text-deep-navy mb-6">
-            Content Categories
-          </h3>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between p-3 bg-primary-blue/5 rounded-xl">
-              <div className="flex items-center gap-3">
-                <div className="bg-primary-blue/10 p-2 rounded-full">
-                  <GraduationCap className="text-primary-blue w-5 h-5" />
-                </div>
-                <span className="font-medium text-deep-navy">Learning</span>
-              </div>
-              <span className="bg-primary-blue text-white px-3 py-1 rounded-full text-sm">
-                145
-              </span>
-            </div>
-            <div className="flex items-center justify-between p-3 bg-accent-yellow/5 rounded-xl">
-              <div className="flex items-center gap-3">
-                <div className="bg-accent-yellow/10 p-2 rounded-full">
-                  <Handshake className="text-accent-yellow w-5 h-5" />
-                </div>
-                <span className="font-medium text-deep-navy">Mentorship</span>
-              </div>
-              <span className="bg-accent-yellow text-deep-navy px-3 py-1 rounded-full text-sm">
-                67
-              </span>
-            </div>
-            <div className="flex items-center justify-between p-3 bg-green-500/5 rounded-xl">
-              <div className="flex items-center gap-3">
-                <div className="bg-green-500/10 p-2 rounded-full">
-                  <MapPin className="text-green-500 w-5 h-5" />
-                </div>
-                <span className="font-medium text-deep-navy">Excursions</span>
-              </div>
-              <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm">
-                34
-              </span>
-            </div>
-            <div className="flex items-center justify-between p-3 bg-purple-500/5 rounded-xl">
-              <div className="flex items-center gap-3">
-                <div className="bg-purple-500/10 p-2 rounded-full">
-                  <Heart
-                    className="text-purple-500 w-5 h-5"
-                    fill="currentColor"
-                  />
-                </div>
-                <span className="font-medium text-deep-navy">Parenting</span>
-              </div>
-              <span className="bg-purple-500 text-white px-3 py-1 rounded-full text-sm">
-                90
-              </span>
-            </div>
-          </div>
-          <button
-            onClick={() => setIsCategoryModalOpen(true)}
-            className="w-full mt-6 bg-soft-gray text-deep-navy px-6 py-3 rounded-full font-semibold flex items-center justify-center gap-2 hover:bg-gray-300 transition"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Add Category
-          </button>
-
-          <AddCategoryModal
-            isOpen={isCategoryModalOpen}
-            onClose={() => setIsCategoryModalOpen(false)}
-            onAddCategory={handleAddCategory}
-          />
-
-          <ContentDetailsModal
-            content={selectedContent}
-            isOpen={isDetailsModalOpen}
-            onClose={() => setIsDetailsModalOpen(false)}
-          />
-        </div>
-
-        <div
-          id="recent-content"
-          className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-lg border border-soft-gray"
-        >
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-xl font-bold text-deep-navy">Recent Content</h3>
-            <select className="bg-soft-gray border border-gray-200 rounded-full px-4 py-2 text-sm focus:outline-none focus:border-primary-blue">
-              <option>All Categories</option>
-              <option>Learning</option>
-              <option>Mentorship</option>
-              <option>Excursions</option>
-              <option>Parenting</option>
-            </select>
-          </div>
-          <div className="space-y-4">
-            {recentContent.map((item) => (
-              <div
-                key={item.id}
-                className="flex items-center gap-4 p-4 bg-soft-gray/50 rounded-xl hover:bg-soft-gray transition"
-              >
-                <div
-                  className={`${
-                    item.type === "video"
-                      ? "bg-primary-blue/10"
-                      : item.type === "pdf"
-                      ? "bg-accent-yellow/10"
-                      : "bg-green-500/10"
-                  } p-3 rounded-full`}
-                >
-                  {item.type === "video" ? (
-                    <Play
-                      className="text-primary-blue w-5 h-5"
-                      fill="currentColor"
-                    />
-                  ) : item.type === "pdf" ? (
-                    <FileText className="text-accent-yellow w-5 h-5" />
-                  ) : (
-                    <BookOpen className="text-green-500 w-5 h-5" />
-                  )}
-                </div>
-                <div className="flex-1">
-                  <h4 className="font-semibold text-deep-navy">{item.title}</h4>
-                  <p className="text-sm text-gray-500">
-                    {item.category} • {item.type.toUpperCase()} •{" "}
-                    {item.duration || item.pages || "Article"}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => handleViewContent(item)}
-                    className="bg-primary-blue text-white p-2 rounded-full hover:bg-primary-blue/90 transition"
-                    aria-label="View details"
-                  >
-                    <Eye className="w-5 h-5" />
-                  </button>
-                  <button
-                    className="bg-accent-yellow text-deep-navy p-2 rounded-full hover:bg-accent-yellow/90 transition"
-                    aria-label="Edit content"
-                  >
-                    <Pen className="w-5 h-5" />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        </div> */}
       </div>
 
       <div
         id="content-table"
         className="bg-white rounded-2xl shadow-lg border border-soft-gray overflow-hidden"
       >
-        <div className="p-6 border-b border-soft-gray flex justify-between items-center">
+        {/* <div className="p-6 border-b border-soft-gray flex justify-between items-center">
           <h3 className="text-xl font-bold text-deep-navy">All Content</h3>
           <div className="flex gap-2">
             <button className="bg-soft-gray text-deep-navy px-6 py-3 rounded-full font-semibold flex items-center gap-2 hover:bg-gray-300 transition">
@@ -835,7 +585,7 @@ const Content = () => {
               Export
             </button>
           </div>
-        </div>
+        </div> */}
         <div className="overflow-x-auto">
           <table className="min-w-full text-left">
             <thead>
@@ -845,7 +595,7 @@ const Content = () => {
                 <th className="px-6 py-4">Type</th>
                 <th className="px-6 py-4">Views/Downloads</th>
                 <th className="px-6 py-4">Upload Date</th>
-                <th className="px-6 py-4">Status</th>
+                {/* <th className="px-6 py-4">Status</th> */}
                 <th className="px-6 py-4">Actions</th>
               </tr>
             </thead>
@@ -886,11 +636,11 @@ const Content = () => {
                 <td className="px-6 py-4 text-sm text-gray-600">
                   May 15, 2023
                 </td>
-                <td className="px-6 py-4">
+                {/* <td className="px-6 py-4">
                   <span className="px-3 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
                     Published
                   </span>
-                </td>
+                </td> */}
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-2">
                     <button className="p-1.5 text-gray-500 hover:text-primary-blue transition">

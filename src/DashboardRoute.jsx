@@ -22,6 +22,7 @@ import Feedback from "./pages/Feedback";
 import Communities from "./pages/Communities";
 import SchoolDetails from "./pages/SchoolDetails";
 import MentorCredentials from "./pages/MentorModule/MentorCredentials";
+import Categories from "./pages/Categories";
 
 const queryClient = new QueryClient();
 
@@ -46,7 +47,7 @@ const App = () => (
                 path="mentors/mentor-details"
                 element={<MentorDetails />}
               />
-               <Route
+              <Route
                 path="mentors/credentials"
                 element={<MentorCredentials />}
               />
@@ -58,6 +59,7 @@ const App = () => (
               <Route path="feedback" element={<Feedback />} />
               <Route path="settings" element={<Settings />} />
               <Route path="profile" element={<Profile />} />
+              <Route path="categories" element={<Categories />} />
             </Route>
           </Routes>
         </QueryClientProvider>
