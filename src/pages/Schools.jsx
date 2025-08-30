@@ -37,7 +37,7 @@ const Schools = () => {
   };
 
   const handleViewSchool = (schoolId) => {
-    navigate("/schools/school-details");
+    navigate(`/schools/school-details/${schoolId}`);
   };
 
   const getSchoolTypeColor = (schoolType) => {
@@ -61,6 +61,7 @@ const Schools = () => {
         "Content-Type": "application/json",
       },
     });
+    console.log(res.data);
     return res.data;
   };
 
@@ -217,7 +218,7 @@ const Schools = () => {
                 </div> */}
                       <div className="flex items-center gap-3">
                         <button
-                          onClick={() => handleViewSchool(school.id)}
+                          onClick={() => handleViewSchool(school._id)}
                           className="flex items-center justify-center rounded-full bg-[#1A73E8] text-white w-10 h-10 hover:bg-[#1A73E8]/90"
                         >
                           <Eye className="w-4 h-4" />
@@ -346,7 +347,7 @@ const Schools = () => {
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-2">
                             <button
-                              onClick={() => handleViewSchool(school.id)}
+                              onClick={() => handleViewSchool(school._id)}
                               className="flex items-center justify-center rounded-full bg-[#1A73E8] text-white w-8 h-8 hover:bg-[#1A73E8]/90"
                             >
                               <Eye className="w-3 h-3" />

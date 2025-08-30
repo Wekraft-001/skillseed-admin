@@ -44,7 +44,7 @@ const UserManagement = () => {
   } = useQuery({
     queryKey: ["users"],
     queryFn: fetchUsers,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 5 * 60 * 1000,
   });
 
   const getRoleBadgeColor = (role) => {
@@ -239,7 +239,7 @@ const UserManagement = () => {
                   <option value="all">All Roles</option>
                   <option value="student">Students</option>
                   <option value="parent">Parents</option>
-                  <option value="admin">Admins</option>
+                  {/* <option value="admin">Admins</option> */}
                 </select>
                 <select
                   value={`${sortBy}-${sortOrder}`}

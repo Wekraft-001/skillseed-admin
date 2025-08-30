@@ -37,7 +37,7 @@ const App = () => (
               <Route path="users" element={<UserManagager />} />
               <Route path="schools" element={<Schools />} />
               <Route
-                path="schools/school-details"
+                path="schools/school-details/:schoolId"
                 element={<SchoolDetails />}
               />
               <Route path="communities" element={<Communities />} />

@@ -312,12 +312,12 @@ const MentorDetails = () => {
                     </div>
                   </div>
                 </div>
-                <Button
+                {/* <Button
                   size="icon"
                   className="rounded-full bg-blue-600 text-white w-8 h-8 hover:bg-blue-600/90"
                 >
                   <MessageSquare className="w-3 h-3" />
-                </Button>
+                </Button> */}
               </div>
             ))}
           </div>
@@ -326,10 +326,10 @@ const MentorDetails = () => {
 
       {/* Action Buttons */}
       <div className="flex flex-wrap gap-4 justify-center lg:justify-start mb-8">
-        <Button className="bg-blue-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-blue-600/90 shadow-lg">
+        {/* <Button className="bg-blue-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-blue-600/90 shadow-lg">
           <MessageSquare className="w-4 h-4 mr-2" />
           Send Message
-        </Button>
+        </Button> */}
         <Button className="bg-yellow-400 text-gray-900 px-8 py-3 rounded-full font-semibold hover:bg-yellow-400/90 shadow-lg">
           <Edit className="w-4 h-4 mr-2" />
           Edit Profile

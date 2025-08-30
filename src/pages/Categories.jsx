@@ -615,16 +615,6 @@ const Categories = () => {
       </div>
     </div>
   );
-
-  //   function getColorClasses(colorName) {
-  //     const color = colorOptions.find((c) => c.name === colorName);
-  //     return color || colorOptions[0];
-  //   }
-
-  //   function getIcon(iconName) {
-  //     const icon = iconOptions.find((i) => i.name === iconName);
-  //     return icon ? icon.component : BookOpen;
-  //   }
 };
 
 export default Categories;
