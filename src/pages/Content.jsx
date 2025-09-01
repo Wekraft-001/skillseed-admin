@@ -151,81 +151,101 @@ const Content = () => {
               </tr>
             </thead>
             <tbody>
-              {isLoading
-                ? Array.from({ length: pageSize }).map((_, i) => (
-                    <SkeletonList key={i} />
-                  ))
-                : paginatedContents.map((content, index) => {
-                    const Icon =
-                      content?.type === "video"
-                        ? Play
-                        : content?.type === "book"
-                        ? BookOpen
-                        : Play;
+              {isLoading ? (
+                Array.from({ length: pageSize }).map((_, i) => (
+                  <SkeletonList key={i} />
+                ))
+              ) : paginatedContents.length === 0 ? (
+                <tr>
+                  <td colSpan="5" className="px-6 py-12 text-center">
+                    <div className="flex flex-col items-center gap-3">
+                      <div className="bg-gray-100 p-4 rounded-full">
+                        <BookOpen className="w-8 h-8 text-gray-400" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-medium text-gray-900 mb-1">
+                          No uploaded content
+                        </h3>
+                        <p className="text-gray-500">
+                          Kindly upload a content to get started
+                        </p>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                paginatedContents.map((content, index) => {
+                  const Icon =
+                    content?.type === "video"
+                      ? Play
+                      : content?.type === "book"
+                      ? BookOpen
+                      : Play;
 
-                    return (
-                      <tr
-                        key={index}
-                        className="border-t border-soft-gray hover:bg-primary-blue/5 transition"
-                      >
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-3">
-                            <div className="bg-primary-blue/10 p-2 rounded-full">
-                              <Icon className="w-5 h-5 text-primary-blue" />
-                            </div>
-                            <div>
-                              <h4 className="font-medium text-deep-navy">
-                                {content?.title}
-                              </h4>
-                              <p className="text-sm text-gray-500">
-                                {content?.author}
-                              </p>
-                            </div>
+                  return (
+                    <tr
+                      key={index}
+                      className="border-t border-soft-gray hover:bg-primary-blue/5 transition"
+                    >
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="bg-primary-blue/10 p-2 rounded-full">
+                            <Icon className="w-5 h-5 text-primary-blue" />
                           </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <span className="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
-                            {content?.type}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 text-sm text-gray-600">
-                          <div className="flex items-center gap-2">
-                            <Eye className="w-4 h-4 text-gray-500" />
-                            <span>{content?.views || "—"}</span>
+                          <div>
+                            <h4 className="font-medium text-deep-navy">
+                              {content?.title}
+                            </h4>
+                            <p className="text-sm text-gray-500">
+                              {content?.author}
+                            </p>
                           </div>
-                        </td>
-                        <td className="px-6 py-4 text-sm text-gray-600">
-                          {new Date(content?.createdAt).toLocaleDateString()}
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-2">
-                            <button className="p-1.5 text-gray-500 hover:text-primary-blue transition">
-                              <Eye className="w-4 h-4" />
-                            </button>
-                            <button className="p-1.5 text-gray-500 hover:text-accent-yellow transition">
-                              <Pen className="w-4 h-4" />
-                            </button>
-                            <button className="p-1.5 text-gray-500 hover:text-red-500 transition">
-                              <svg
-                                className="w-4 h-4"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                                />
-                              </svg>
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
+                          {content?.type}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-600">
+                        <div className="flex items-center gap-2">
+                          <Eye className="w-4 h-4 text-gray-500" />
+                          <span>{content?.views || "—"}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-600">
+                        {new Date(content?.createdAt).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <button className="p-1.5 text-gray-500 hover:text-primary-blue transition">
+                            <Eye className="w-4 h-4" />
+                          </button>
+                          <button className="p-1.5 text-gray-500 hover:text-accent-yellow transition">
+                            <Pen className="w-4 h-4" />
+                          </button>
+                          <button className="p-1.5 text-gray-500 hover:text-red-500 transition">
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
             </tbody>
           </table>
           {/* Pagination Controls */}
