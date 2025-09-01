@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import SchoolDropdown from "../SchoolDrodwon";
+import { SchoolDropdown } from "../Dropdown";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 

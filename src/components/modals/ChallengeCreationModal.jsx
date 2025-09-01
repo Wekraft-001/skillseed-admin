@@ -7,13 +7,14 @@ import {
   DialogTitle,
 } from "../../components/ui/dialog";
 import Select from "react-select";
+import { CategoriesDropdown } from "../Dropdown";
 
-const categoryOptions = [
-  { value: "Science", label: "Science" },
-  { value: "Technology", label: "Technology" },
-  { value: "Entrepreneurship", label: "Entrepreneurship" },
-  { value: "Mathematics", label: "Mathematics" },
-];
+// const categoryOptions = [
+//   { value: "Science", label: "Science" },
+//   { value: "Technology", label: "Technology" },
+//   { value: "Entrepreneurship", label: "Entrepreneurship" },
+//   { value: "Mathematics", label: "Mathematics" },
+// ];
 
 const ageGroupOptions = [
   { value: "6-8", label: "6-8" },
@@ -96,25 +97,11 @@ const ChallengeCreationModal = ({ isOpen, onClose }) => {
                 >
                   Category
                 </label>
-                <Select
-                  options={categoryOptions}
+                <CategoriesDropdown
                   value={selectedCategory}
-                  onChange={setSelectedCategory}
-                  placeholder="Select Category"
-                  className="w-full"
-                  classNames={{
-                    control: (state) =>
-                      `rounded-xl border px-2 py-1 h-12 text-base font-medium ${
-                        state.isFocused
-                          ? "border-[#1A73E8] shadow-md"
-                          : "border-gray-200"
-                      }`,
-                    menu: () =>
-                      "bg-white border border-gray-200 rounded-xl shadow-lg",
-                    option: (state) =>
-                      `px-4 py-2 cursor-pointer ${
-                        state.isFocused ? "bg-blue-100 text-blue-700" : ""
-                      }`,
+                  onChange={(val, id) => {
+                    setSelectedCategory(val);
+                    // setSchoolId(id);
                   }}
                 />
               </div>
@@ -210,15 +197,15 @@ const ChallengeCreationModal = ({ isOpen, onClose }) => {
             </div>
 
             <div className="flex flex-col w-full">
-                <label className="font-semibold text-[#0F1419] mb-2">
-                  Add Url for Demo Video
-                </label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="file:rounded-full file:bg-[#1A73E8] file:text-white file:px-5 file:py-2 file:border-none file:font-semibold file:cursor-pointer bg-gray-50 rounded-xl px-3 py-2 border border-gray-200"
-                />
-              </div>
+              <label className="font-semibold text-[#0F1419] mb-2">
+                Add Url for Demo Video
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                className="file:rounded-full file:bg-[#1A73E8] file:text-white file:px-5 file:py-2 file:border-none file:font-semibold file:cursor-pointer bg-gray-50 rounded-xl px-3 py-2 border border-gray-200"
+              />
+            </div>
 
             <div className="flex justify-end items-center space-x-4 pt-6">
               <button

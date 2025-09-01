@@ -1,4 +1,5 @@
 import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 export const SkeletonCard = () => (
   <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 space-y-4">

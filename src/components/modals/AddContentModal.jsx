@@ -15,18 +15,10 @@ import { Button } from "../ui/button";
 import Select from "react-select";
 import { Label } from "../ui/label";
 
-const categoryOptions = [
-  { value: "education", label: "Education" },
-  { value: "science", label: "Science" },
-  { value: "mathematics", label: "Mathematics" },
-  { value: "literature", label: "Literature" },
-  { value: "technology", label: "Technology" },
-];
-
 const targetAudienceOptions = [
-  { value: "Parents", label: "Parents" },
-  { value: "Mentors", label: "Mentors" },
-  { value: "Schools", label: "Schools" },
+  { value: "parent", label: "Parents" },
+  { value: "mentor", label: "Mentors" },
+  { value: "school", label: "Schools" },
 ];
 
 const AddContentModal = ({ isOpen, onClose }) => {
@@ -36,14 +28,13 @@ const AddContentModal = ({ isOpen, onClose }) => {
     title: "",
     description: "",
     type: "video",
-    category: null,
+    category: "literature",
     targetAudience: null,
     videoUrl: "",
     bookUrl: "",
     author: "",
     thumbnailUrl: "",
   });
-  const [isPublished, setIsPublished] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleInputChange = (field, value) => {
@@ -56,14 +47,13 @@ const AddContentModal = ({ isOpen, onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-
     try {
       // Prepare payload according to API structure
       const payload = {
         title: formData.title,
         description: formData.description,
         type: formData.type,
-        // category: formData.category?.value || "",
+        category: formData.category,
         targetAudience: formData.targetAudience?.value,
         author: formData.author,
         thumbnailUrl: formData.thumbnailUrl,
@@ -95,11 +85,13 @@ const AddContentModal = ({ isOpen, onClose }) => {
           author: "",
           thumbnailUrl: "",
         });
-        setIsPublished(false);
         onClose();
-        // You might want to show a success message here
+        alert("Content Successfully created");
       } else {
-        throw new Error("Failed to create content");
+        throw (
+          (new Error("Failed to create content"),
+          alert("Failed to create content"))
+        );
       }
     } catch (error) {
       console.error("Error creating content:", error);
@@ -126,7 +118,7 @@ const AddContentModal = ({ isOpen, onClose }) => {
             <div className="grid grid-cols-2 gap-4">
               {[
                 { type: "video", icon: Video, label: "Video", color: "purple" },
-                { type: "pdf", icon: FileText, label: "PDF", color: "yellow" },
+                { type: "book", icon: FileText, label: "PDF", color: "yellow" },
               ].map((item) => {
                 const isActive = formData.type === item.type;
                 return (
