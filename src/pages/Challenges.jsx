@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
 import {
   Trophy,
   Target,
@@ -12,6 +14,8 @@ import { Card } from "../components/ui/card";
 import ChallengeCreationModal from "../components/modals/ChallengeCreationModal";
 
 const Challenges = () => {
+  const apiURL = import.meta.env.VITE_REACT_APP_BASE_URL;
+  const token = localStorage.getItem("adminToken");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const challenges = [
@@ -82,6 +86,22 @@ const Challenges = () => {
     }
   };
 
+  // const fetchCategories = async () => {
+  //   const res = await axios.get(`${apiURL}/content/challenge`, {
+  //     headers: {
+  //       Authorization: `Bearer ${token}`,
+  //       "Content-Type": "application/json",
+  //     },
+  //   });a
+  //   console.log("Challenges from API:", res.data);
+  //   return res.data;
+  // };
+
+  // const { data: challengess = [] } = useQuery({
+  //   queryKey: ["challenges"],
+  //   queryFn: fetchCategories,
+  //   staleTime: 5 * 60 * 1000, // 5 minutes
+  // });
   return (
     <div className="bg-[#F5F7FA] min-h-[calc(100vh-80px)] relative">
       {/* Decorative Elements */}
@@ -112,20 +132,20 @@ const Challenges = () => {
               <Plus className="w-4 h-4 mr-2" />
               Create Challenge
             </button>
-            <button className="flex items-center bg-white text-[#1A73E8] border border-[#1A73E8] px-6 py-3 rounded-full font-semibold hover:bg-[#1A73E8]/10 cursor-pointer">
+            {/* <button className="flex items-center bg-white text-[#1A73E8] border border-[#1A73E8] px-6 py-3 rounded-full font-semibold hover:bg-[#1A73E8]/10 cursor-pointer">
               <Filter className="w-4 h-4 mr-2" />
               Filter
-            </button>
+            </button> */}
           </div>
 
-          <div className="relative">
+          {/* <div className="relative">
             <input
               type="text"
               placeholder="Search challenges..."
               className="bg-white border border-gray-200 rounded-full px-5 py-2 focus:outline-none focus:border-[#1A73E8] w-full"
             />
             <Search className="absolute right-3 top-2.5 w-4 h-4 text-gray-400" />
-          </div>
+          </div> */}
         </div>
 
         {/* Challenges Grid */}
@@ -142,13 +162,13 @@ const Challenges = () => {
                     {challenge.category}
                   </span>
                 </div>
-                <span
+                {/* <span
                   className={`text-xs px-3 py-1 rounded-full font-semibold ${getStatusColor(
                     challenge.status
                   )}`}
                 >
                   {challenge.status}
-                </span>
+                </span> */}
               </div>
 
               <h3 className="text-xl font-bold text-[#0F1419] mb-3">
@@ -186,7 +206,7 @@ const Challenges = () => {
                 </span>
               </div>
 
-              <button
+              {/* <button
                 className={`w-full rounded-full font-semibold h-10 cursor-pointer ${
                   challenge.status === "Active"
                     ? "bg-[#1A73E8] text-white hover:bg-[#1A73E8]/90"
@@ -197,7 +217,7 @@ const Challenges = () => {
                 {challenge.status === "Active"
                   ? "Join Challenge"
                   : "Coming Soon"}
-              </button>
+              </button> */}
             </Card>
           ))}
         </div>

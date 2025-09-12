@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { PageMetadata } from "../components/PageMetadata";
 import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
 import { Card } from "../components/ui/card";
 import {
   School,
@@ -28,8 +29,6 @@ import {
 const Home = () => {
   const apiURL = import.meta.env.VITE_REACT_APP_BASE_URL;
   const token = localStorage.getItem("adminToken");
-  const [loading, setLoading] = useState(false);
-  const [dashboardData, setDashboardData] = useState({});
 
   const engagementData = [
     { name: "Jan", engagement: 65, signups: 30 },
@@ -41,26 +40,27 @@ const Home = () => {
     { name: "Jul", engagement: 70, signups: 80 },
   ];
 
-  useEffect(() => {
-    const getDashboardData = () => {
-      axios
-        .get(`${apiURL}/dashboard/get-data`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-type": "application/json; charset=UTF-8",
-          },
-        })
-        .then((response) => {
-          // console.log(response.data, "data on dashboard");
-          setDashboardData(response.data.dashboardResponse);
-        })
-        .catch((error) => {
-          console.error("Error fetching vendors:", error);
-        });
-    };
+  const getDashboardData = async () => {
+    const res = await axios.get(`${apiURL}/dashboard/get-data`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    console.log(res.data);
+    return res.data.dashboardResponse;
+  };
 
-    getDashboardData();
-  }, []);
+  const {
+    data: dashboardData = {},
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: ["dashboard-data"],
+    queryFn: getDashboardData,
+    staleTime: 5 * 60 * 1000,
+  });
   return (
     <>
       <PageMetadata
@@ -115,7 +115,7 @@ const Home = () => {
                     Total Students
                   </p>
                   <h3 className="text-2xl md:text-3xl font-bold text-[#0F1419]">
-                  {dashboardData?.analytics?.totalStudents}
+                    {dashboardData?.analytics?.totalStudents}
                   </h3>
                 </div>
                 <div className="bg-[#FFC107]/10 p-3 md:p-4 rounded-full">

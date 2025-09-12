@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import axios from "axios";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Plus,
   Bell,
@@ -36,6 +38,10 @@ import { Textarea } from "../components/ui/formComponents/textarea";
 import { Label } from "../components/ui/label";
 
 const Communities = () => {
+  const apiURL = import.meta.env.VITE_REACT_APP_BASE_URL;
+  const token = localStorage.getItem("adminToken");
+  const queryClient = useQueryClient();
+
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [filters, setFilters] = useState({
     type: "",
@@ -44,8 +50,95 @@ const Communities = () => {
     region: "",
   });
 
+  // Form state for creating community
+  const [formData, setFormData] = useState({
+    name: "",
+    description: "",
+    category: "",
+    ageGroup: "",
+  });
+
   const handleFilterChange = (key, value) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleFormChange = (key, value) => {
+    setFormData((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const resetForm = () => {
+    setFormData({
+      name: "",
+      description: "",
+      category: "",
+      ageGroup: "",
+    });
+  };
+
+  const fetchCategories = async () => {
+    const res = await axios.get(`${apiURL}/challenge-categories`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    console.log(res.data);
+    return res.data;
+  };
+
+  const createCommunity = async (communityData) => {
+    const res = await axios.post(`${apiURL}/communities`, communityData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    return res.data;
+  };
+
+  const {
+    data: categories = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: ["categories-community"],
+    queryFn: fetchCategories,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const createCommunityMutation = useMutation({
+    mutationFn: createCommunity,
+    onSuccess: () => {
+      // Reset form and close modal
+      resetForm();
+      setShowCreateModal(false);
+
+      // You might want to refetch communities list here if you have that query
+      // queryClient.invalidateQueries(['communities']);
+
+      // Show success message (you can implement toast notifications)
+      console.log("Community created successfully!");
+    },
+    onError: (error) => {
+      console.error("Error creating community:", error);
+      // Show error message (you can implement toast notifications)
+    },
+  });
+
+  const handleCreateCommunity = () => {
+    // Validate form
+    if (
+      !formData.name ||
+      !formData.description ||
+      !formData.category ||
+      !formData.ageGroup
+    ) {
+      console.error("Please fill in all required fields");
+      return;
+    }
+
+    createCommunityMutation.mutate(formData);
   };
 
   return (
@@ -75,55 +168,98 @@ const Communities = () => {
               <div className="space-y-4">
                 <div>
                   <Label htmlFor="name">Community Name</Label>
-                  <Input id="name" placeholder="Enter community name" />
+                  <Input
+                    id="name"
+                    value={formData.name}
+                    onChange={(e) => handleFormChange("name", e.target.value)}
+                    placeholder="Enter community name"
+                  />
                 </div>
                 <div>
                   <Label htmlFor="description">Description</Label>
                   <Textarea
                     id="description"
+                    value={formData.description}
+                    onChange={(e) =>
+                      handleFormChange("description", e.target.value)
+                    }
                     placeholder="Describe your community"
                   />
                 </div>
                 <div>
                   <Label>Community Type</Label>
-                  <Select>
+                  <Select
+                    value={formData.category}
+                    onValueChange={(value) =>
+                      handleFormChange("category", value)
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select type" />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="science">Science Club</SelectItem>
-                      <SelectItem value="math">Math Wizards</SelectItem>
-                      <SelectItem value="tech">Tech Explorers</SelectItem>
-                      <SelectItem value="art">Art & Creativity</SelectItem>
+                    <SelectContent className="bg-white border-0">
+                      {isLoading ? (
+                        <SelectItem value="" disabled>
+                          Loading categories...
+                        </SelectItem>
+                      ) : isError ? (
+                        <SelectItem value="" disabled>
+                          Error loading categories
+                        </SelectItem>
+                      ) : (
+                        categories.map((category) => (
+                          <SelectItem
+                            key={category.id || category.value || category.name}
+                            value={
+                              category.value || category.id || category.name
+                            }
+                          >
+                            {category.name || category.label}
+                          </SelectItem>
+                        ))
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
                   <Label>Age Group</Label>
-                  <Select>
+                  <Select
+                    value={formData.ageGroup}
+                    onValueChange={(value) =>
+                      handleFormChange("ageGroup", value)
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select age group" />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="5-8">5-8 years</SelectItem>
+                    <SelectContent className="bg-white border-0">
+                      <SelectItem value="6-8">6-8 years</SelectItem>
                       <SelectItem value="9-12">9-12 years</SelectItem>
-                      <SelectItem value="13-16">13-16 years</SelectItem>
+                      <SelectItem value="13-15">13-15 years</SelectItem>
+                      <SelectItem value="16-18">16-18 years</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="flex gap-2 pt-4">
                   <Button
                     variant="outline"
-                    onClick={() => setShowCreateModal(false)}
+                    onClick={() => {
+                      resetForm();
+                      setShowCreateModal(false);
+                    }}
                     className="flex-1"
+                    disabled={createCommunityMutation.isPending}
                   >
                     Cancel
                   </Button>
                   <Button
-                    onClick={() => setShowCreateModal(false)}
+                    onClick={handleCreateCommunity}
                     className="flex-1"
+                    disabled={createCommunityMutation.isPending}
                   >
-                    Create Community
+                    {createCommunityMutation.isPending
+                      ? "Creating..."
+                      : "Create Community"}
                   </Button>
                 </div>
               </div>
@@ -188,7 +324,7 @@ const Communities = () => {
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-white rounded-2xl p-6 shadow-lg border border-slate-200 mb-8">
+      <div className="bg-white rounded-2xl p-6 shadow-lg border border-slate-200 mb-8 hidden">
         <h3 className="text-xl font-bold text-slate-900 mb-6">Quick Actions</h3>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Button className="bg-blue-600 text-white px-6 py-4 rounded-full font-semibold h-auto">
@@ -229,10 +365,14 @@ const Communities = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Types</SelectItem>
-                <SelectItem value="science">Science Club</SelectItem>
-                <SelectItem value="math">Math Wizards</SelectItem>
-                <SelectItem value="tech">Tech Explorers</SelectItem>
-                <SelectItem value="art">Art & Creativity</SelectItem>
+                {categories.map((category) => (
+                  <SelectItem
+                    key={category.id || category.value || category.name}
+                    value={category.value || category.id || category.name}
+                  >
+                    {category.name || category.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>

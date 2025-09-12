@@ -20,8 +20,12 @@ import {
   CardTitle,
 } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
 
 const MentorCredentials = () => {
+  const apiURL = import.meta.env.VITE_REACT_APP_BASE_URL;
+  const token = localStorage.getItem("adminToken");
   const navigate = useNavigate();
   const [pendingApprovals, setPendingApprovals] = useState(24);
   const [totalApproved, setTotalApproved] = useState(156);
@@ -39,9 +43,24 @@ const MentorCredentials = () => {
   };
 
   const handleReview = () => {
-    navigate("/review-mentor-application");
+    navigate("/mentors/review-mentor-application");
+  };
+  const fetchCategories = async () => {
+    const res = await axios.get(`${apiURL}/admin/mentor-credentials`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    console.log("Credentials from API:", res.data);
+    return res.data;
   };
 
+  const { data: credentials = [] } = useQuery({
+    queryKey: ["credentials"],
+    queryFn: fetchCategories,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
   return (
     <div className="container mx-auto px-6 py-8">
       <div className="flex items-center gap-4 mb-8">
@@ -137,7 +156,7 @@ const MentorCredentials = () => {
               <Clock className="h-6 w-6 text-yellow-500" />
               Pending Mentor Approvals
             </CardTitle>
-            <div className="flex gap-3">
+            {/* <div className="flex gap-3">
               <Button variant="outline" size="sm">
                 <Filter className="h-4 w-4 mr-2" />
                 Filter
@@ -146,7 +165,7 @@ const MentorCredentials = () => {
                 <Download className="h-4 w-4 mr-2" />
                 Export
               </Button>
-            </div>
+            </div> */}
           </div>
         </CardHeader>
         <CardContent>
@@ -208,10 +227,10 @@ const MentorCredentials = () => {
                     <Eye className="h-4 w-4 mr-2" />
                     Review
                   </Button>
-                  <Button variant="outline" size="sm">
+                  {/* <Button variant="outline" size="sm">
                     <FileText className="h-4 w-4 mr-2" />
                     Documents
-                  </Button>
+                  </Button> */}
                 </div>
               </div>
             </div>
@@ -273,10 +292,10 @@ const MentorCredentials = () => {
                     <Eye className="h-4 w-4 mr-2" />
                     Review
                   </Button>
-                  <Button variant="outline" size="sm">
+                  {/* <Button variant="outline" size="sm">
                     <FileText className="h-4 w-4 mr-2" />
                     Documents
-                  </Button>
+                  </Button> */}
                 </div>
               </div>
             </div>
