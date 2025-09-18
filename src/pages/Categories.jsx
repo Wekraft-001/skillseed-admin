@@ -113,7 +113,7 @@ const Categories = () => {
   ];
 
   const fetchCategories = async () => {
-    const res = await axios.get(`${apiURL}/challenge-categories`, {
+    const res = await axios.get(`${apiURL}/dashboard/all-categories`, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
@@ -136,7 +136,7 @@ const Categories = () => {
 
   const createCategory = async (categoryData) => {
     let url;
-    url = `${apiURL}/challenge-categories`;
+    url = `${apiURL}/dashboard/create-category`;
     try {
       setSubmitting(true);
       const response = await axios.post(url, categoryData, {

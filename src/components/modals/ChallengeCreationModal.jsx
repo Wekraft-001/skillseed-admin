@@ -53,13 +53,13 @@ const ChallengeCreationModal = ({ isOpen, onClose }) => {
   };
 
   const fetchCategories = async () => {
-    const res = await axios.get(`${apiURL}/challenge-categories`, {
+    const res = await axios.get(`${apiURL}/dashboard/all-categories`, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
     });
-    console.log("Categories from API:", res.data);
+    // console.log("Categories from API:", res.data);
     return res.data;
   };
 
@@ -111,6 +111,7 @@ const ChallengeCreationModal = ({ isOpen, onClose }) => {
       categoryId: selectedCategory.value,
       difficultyLevel: selectedLevel.value,
       estimatedTime: formData.duration,
+      theme: formData.theme,
       ageRange: selectedAgeGroup.value,
       imageUrl: formData.imageUrl || "",
       videoTutorialUrl: formData.videoUrl || "",

@@ -1,5 +1,7 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "../../components/ui/button";
 import {
   ArrowLeft,
@@ -11,28 +13,14 @@ import {
   MapPin,
   HelpCircle,
   User,
+  Loader2,
 } from "lucide-react";
 
 const MentorDetails = () => {
+  const apiURL = import.meta.env.VITE_REACT_APP_BASE_URL;
+  const token = localStorage.getItem("adminToken");
   const navigate = useNavigate();
-
-  const mentorData = {
-    name: "Grace Elizabeth Mensah",
-    email: "grace@skillseed.com",
-    phone: "+233 24 123 4567",
-    location: "Kumasi, Ghana",
-    expertise: "Science Expert",
-    kidsmentored: 120,
-    rating: 4.9,
-    experience: 3,
-    dateJoined: "March 15, 2021",
-    status: "Active",
-    image:
-      "https://images.pexels.com/photos/459976/pexels-photo-459976.jpeg?auto=compress&w=200&q=80",
-    education: "MSc. Computer Science, University of Ghana",
-    certifications: "Certified STEM Educator, Google for Education",
-    skills: ["Robotics", "Science Club", "STEM Education", "Innovation Labs"],
-  };
+  const { id } = useParams();
 
   const recentActivity = [
     {
@@ -79,10 +67,113 @@ const MentorDetails = () => {
     },
   ];
 
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+
+    const date = new Date(dateString);
+    const options = {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    };
+
+    return date.toLocaleDateString("en-US", options);
+  };
+
+  const fetchMentorDetails = async (mentorId) => {
+    const res = await axios.get(`${apiURL}/mentors/${mentorId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    console.log(res.data);
+    return res.data;
+  };
+
+  const {
+    data: mentorData = {},
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["mentor-by-id", id],
+    queryFn: () => fetchMentorDetails(id),
+    enabled: !!id,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="p-4 md:p-8 w-full max-w-[1800px] mx-auto">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" />
+            <p className="text-gray-600">Loading mentor details...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (isError) {
+    return (
+      <div className="p-4 md:p-8 w-full max-w-[1800px] mx-auto">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Ban className="w-8 h-8 text-red-600" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              Error Loading Mentor
+            </h3>
+            <p className="text-gray-600 mb-4">
+              {error?.response?.data?.message ||
+                error?.message ||
+                "Failed to load mentor details"}
+            </p>
+            <Button
+              onClick={() => navigate(-1)}
+              className="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-600/90"
+            >
+              Go Back
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // If no mentor data
+  if (!mentorData) {
+    return (
+      <div className="p-4 md:p-8 w-full max-w-[1800px] mx-auto">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <User className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              Mentor Not Found
+            </h3>
+            <p className="text-gray-600 mb-4">
+              The mentor you're looking for doesn't exist or has been removed.
+            </p>
+            <Button
+              onClick={() => navigate("/mentors")}
+              className="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-600/90"
+            >
+              Back to Mentors
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="p-4 md:p-8 w-full max-w-[1800px] mx-auto">
+    <div className="p-4 md:p-6 w-full max-w-[1800px] mx-auto">
       {/* Header */}
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-3 gap-4">
         <div className="flex items-center space-x-4">
           <Button
             variant="outline"
@@ -108,32 +199,34 @@ const MentorDetails = () => {
         <div className="flex flex-col lg:flex-row gap-8 relative z-10">
           <div className="flex flex-col items-center lg:items-start">
             <img
-              src={mentorData.image}
+              src={mentorData?.image}
               className="w-32 h-32 rounded-full border-4 border-blue-600 ring-4 ring-yellow-400 object-cover shadow-lg bg-white mb-4"
-              alt={mentorData.name}
+              alt={mentorData.firstName}
             />
             <div className="text-center lg:text-left">
               <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">
-                {mentorData.name}
+                {mentorData?.firstName + " " + mentorData?.lastName}
               </h2>
               <div className="flex items-center gap-2 justify-center lg:justify-start mb-3">
                 <MapPin className="w-4 h-4 text-blue-600" />
-                <span className="text-gray-500">{mentorData.location}</span>
+                <span className="text-gray-500">
+                  {mentorData?.city + "" + mentorData?.country}
+                </span>
               </div>
               <div className="flex gap-3 justify-center lg:justify-start mb-4 flex-wrap">
                 <span className="bg-yellow-400/90 text-xs px-4 py-2 rounded-full font-semibold text-gray-800">
-                  {mentorData.expertise}
+                  {mentorData?.specialty}
                 </span>
-                <span className="bg-blue-600/10 text-blue-600 px-4 py-2 rounded-full text-xs font-medium">
+                {/* <span className="bg-blue-600/10 text-blue-600 px-4 py-2 rounded-full text-xs font-medium">
                   {mentorData.status}
-                </span>
+                </span> */}
               </div>
             </div>
           </div>
           <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-blue-600/5 rounded-xl p-4 text-center">
               <div className="text-2xl font-bold text-blue-600 mb-1">
-                {mentorData.kidsmentored}
+                {mentorData?.students.length}
               </div>
               <div className="text-sm text-gray-600 flex items-center justify-center gap-1">
                 <User className="w-4 h-4 text-yellow-400" />
@@ -149,7 +242,7 @@ const MentorDetails = () => {
             </div>
             <div className="bg-blue-600/5 rounded-xl p-4 text-center">
               <div className="text-2xl font-bold text-blue-600 mb-1">
-                {mentorData.experience}
+                {mentorData?.yearsOfExperience}
               </div>
               <div className="text-sm text-gray-600">Years Experience</div>
             </div>
@@ -158,52 +251,52 @@ const MentorDetails = () => {
       </div>
 
       {/* Information and Expertise Cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+      <div classmentorIdName="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Personal Information */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-200 relative overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-200 relative overflow-hidden mb-8">
           <div className="absolute right-[-20px] bottom-[-20px] w-20 h-20 bg-blue-600/10 rounded-full"></div>
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-xl font-bold text-gray-900">
               Personal Information
             </h3>
-            <Button
+            {/* <Button
               size="icon"
               className="rounded-full bg-yellow-400 text-gray-900 hover:bg-yellow-400/80"
             >
               <Edit className="w-4 h-4" />
-            </Button>
+            </Button> */}
           </div>
           <div className="space-y-4 relative z-10">
             <div className="flex flex-col md:flex-row md:justify-between">
               <span className="text-gray-600">Full Name:</span>
               <span className="font-semibold text-gray-900">
-                {mentorData.name}
+                {mentorData?.firstName + " " + mentorData?.lastName}
               </span>
             </div>
             <div className="flex flex-col md:flex-row md:justify-between">
               <span className="text-gray-600">Email:</span>
               <span className="font-semibold text-blue-600">
-                {mentorData.email}
+                {mentorData?.email}
               </span>
             </div>
             <div className="flex flex-col md:flex-row md:justify-between">
               <span className="text-gray-600">Phone:</span>
               <span className="font-semibold text-gray-900">
-                {mentorData.phone}
+                {mentorData?.phoneNumber}
               </span>
             </div>
             <div className="flex flex-col md:flex-row md:justify-between">
               <span className="text-gray-600">Date Joined:</span>
               <span className="font-semibold text-gray-900">
-                {mentorData.dateJoined}
+                {formatDate(mentorData?.createdAt)}
               </span>
             </div>
-            <div className="flex flex-col md:flex-row md:justify-between">
+            {/* <div className="flex flex-col md:flex-row md:justify-between">
               <span className="text-gray-600">Status:</span>
               <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-medium">
                 {mentorData.status}
               </span>
-            </div>
+            </div> */}
           </div>
         </div>
 
@@ -219,13 +312,13 @@ const MentorDetails = () => {
                 Primary Expertise:
               </span>
               <span className="bg-yellow-400/90 text-gray-900 px-4 py-2 rounded-full font-semibold">
-                Science & Technology
+                {mentorData?.specialty}
               </span>
             </div>
             <div>
               <span className="text-gray-600 block mb-2">Skills:</span>
               <div className="flex flex-wrap gap-2">
-                {mentorData.skills.map((skill, index) => (
+                {mentorData?.areasOfExpertise.map((skill, index) => (
                   <span
                     key={index}
                     className={`px-3 py-1 rounded-full text-sm font-medium ${
@@ -256,7 +349,7 @@ const MentorDetails = () => {
       </div>
 
       {/* Activity and Mentees */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 my-8">
         {/* Recent Activity */}
         <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-200 relative overflow-hidden">
           <div className="absolute right-[-30px] bottom-[-30px] w-28 h-28 bg-blue-600/10 rounded-full"></div>
@@ -330,10 +423,10 @@ const MentorDetails = () => {
           <MessageSquare className="w-4 h-4 mr-2" />
           Send Message
         </Button> */}
-        <Button className="bg-yellow-400 text-gray-900 px-8 py-3 rounded-full font-semibold hover:bg-yellow-400/90 shadow-lg">
+        {/* <Button className="bg-yellow-400 text-gray-900 px-8 py-3 rounded-full font-semibold hover:bg-yellow-400/90 shadow-lg">
           <Edit className="w-4 h-4 mr-2" />
           Edit Profile
-        </Button>
+        </Button> */}
         <Button
           variant="outline"
           className="border-red-300 text-red-600 px-8 py-3 rounded-full font-semibold hover:bg-red-50 shadow-lg"

@@ -25,12 +25,13 @@ const UserManagement = () => {
   const usersPerPage = 10;
 
   const fetchUsers = async () => {
-    const res = await axios.get(`${apiURL}/users/all`, {
+    const res = await axios.get(`${apiURL}/dashboard/all-users`, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
     });
+    console.log(res.data, "users");
     return res.data.filter(
       (user) => user?.role?.toLowerCase() !== "super_admin"
     );

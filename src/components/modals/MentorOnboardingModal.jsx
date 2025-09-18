@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Input } from "../ui/formComponents/input";
 import { Camera, Upload, ArrowRight, Star, Users } from "lucide-react";
 import Select from "react-select";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 
 const specialtyOptions = [
   { value: "Science", label: "Science" },
@@ -90,27 +90,37 @@ const MentorOnboardingModal = ({ open, onOpenChange }) => {
     formData.append("country", country);
     formData.append("image", image);
 
-    setLoading(false);
     axios
       .post(url, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
         },
       })
       .then((response) => {
         console.log(response, "response from adding mentor");
-        if (response.status === 201) {
-          toast.success("Mentor Successfully Added");
+
+        if (response.status === 201 && response.data) {
+          toast.success(
+            `Mentor ${response.data.mentor.firstName} onboarded successfully`
+          );
+
           setCreateMentorDetails(initialValue);
           setImagePreview(null);
           setImage(null);
           onClose();
+
+          setTimeout(() => {
+            window.location.reload();
+          }, 2000);
+        } else {
+          throw new Error(`Unexpected response status:${response.status}`);
         }
       })
       .catch((error) => {
-        const message =
-          error?.response?.data?.message || "Something went wrong";
-        alert(message);
+        const message = error?.response?.data?.message;
+        toast.error(message);
+        // console.error(error);
       })
 
       .finally(() => {

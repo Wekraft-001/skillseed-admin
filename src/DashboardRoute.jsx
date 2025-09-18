@@ -45,7 +45,7 @@ const App = () => (
               <Route path="challenges" element={<Challenges />} />
               <Route path="mentors" element={<Mentors />} />
               <Route
-                path="mentors/mentor-details"
+                path="mentors/mentor-details/:id"
                 element={<MentorDetails />}
               />
               <Route

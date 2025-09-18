@@ -96,7 +96,7 @@ const Home = () => {
                     Total Schools
                   </p>
                   <h3 className="text-2xl md:text-3xl font-bold text-[#0F1419]">
-                    {dashboardData?.analytics?.totalSchools}
+                    {dashboardData?.analytics?.totalSchools || 0}
                   </h3>
                 </div>
                 <div className="bg-[#1A73E8]/10 p-3 md:p-4 rounded-full">
@@ -115,7 +115,7 @@ const Home = () => {
                     Total Students
                   </p>
                   <h3 className="text-2xl md:text-3xl font-bold text-[#0F1419]">
-                    {dashboardData?.analytics?.totalStudents}
+                    {dashboardData?.analytics?.totalStudents || 0}
                   </h3>
                 </div>
                 <div className="bg-[#FFC107]/10 p-3 md:p-4 rounded-full">
@@ -134,7 +134,7 @@ const Home = () => {
                     Active Challenges
                   </p>
                   <h3 className="text-2xl md:text-3xl font-bold text-[#0F1419]">
-                    18
+                    0
                   </h3>
                 </div>
                 <div className="bg-[#1A73E8]/10 p-3 md:p-4 rounded-full">
@@ -153,7 +153,7 @@ const Home = () => {
                     Upcoming Events
                   </p>
                   <h3 className="text-2xl md:text-3xl font-bold text-[#0F1419]">
-                    7
+                    0
                   </h3>
                 </div>
                 <div className="bg-[#FFC107]/10 p-3 md:p-4 rounded-full">

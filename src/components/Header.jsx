@@ -1,6 +1,7 @@
-import React, { Fragment, useState, useEffect } from "react";
+import React, { Fragment } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
 import { Bell, LogOut, ShieldCheck } from "lucide-react";
 import { useSidebar } from "../context/SidebarContext";
 import { IoMenu } from "react-icons/io5";
@@ -16,7 +17,6 @@ import Logo from "../assets/logo.svg";
 const Header = () => {
   const apiURL = import.meta.env.VITE_REACT_APP_BASE_URL;
   const token = localStorage.getItem("adminToken");
-  const [userData, setUserData] = useState({});
   const { toggleSidebar } = useSidebar();
   const navigate = useNavigate();
 
@@ -59,30 +59,31 @@ const Header = () => {
   ];
 
   const handleLogout = () => {
-    localStorage.removeItem("adminToken"); // clear the token
-    navigate("/"); // redirect to login
+    localStorage.removeItem("adminToken");
+    navigate("/");
   };
 
-  useEffect(() => {
-    const userDetails = () => {
-      axios
-        .get(`${apiURL}/users/me`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-type": "application/json; charset=UTF-8",
-          },
-        })
-        .then((response) => {
-          // console.log(response.data, "User Info");
-          setUserData(response.data);
-        })
-        .catch((error) => {
-          console.error("Error fetching vendors:", error);
-        });
-    };
+  const getMyProfile = async () => {
+    const res = await axios.get(`${apiURL}/auth/profile`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    // console.log(res.data, "User Info");
+    return res.data;
+  };
 
-    userDetails();
-  }, []);
+  const {
+    data: userData = {},
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["user-profile"],
+    queryFn: getMyProfile,
+    staleTime: 5 * 60 * 1000,
+  });
   return (
     <header className="h-16 border-b border-gray-200 flex items-center justify-between px-4 fixed top-0 left-0 right-0 bg-white z-50">
       <div className="flex items-center">
@@ -109,9 +110,9 @@ const Header = () => {
             <MenuButton className="flex rounded-full text-sm focus:outline-none">
               <span className="sr-only">Open user menu</span>
               <div className="relative">
-                <div className="absolute -top-1 -right-1 w-4.5 h-4.5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs">
+                {/* <div className="absolute -top-1 -right-1 w-4.5 h-4.5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs">
                   92
-                </div>
+                </div> */}
                 <Bell className="h-6 w-6 text-gray-700" />
               </div>
             </MenuButton>
@@ -159,7 +160,7 @@ const Header = () => {
                 </div>
               </MenuItem>
               <MenuItem>
-                <div className="max-h-[400px] overflow-y-auto">
+                <div className="max-h-[400px] overflow-y-auto hidden">
                   {notifications.map((notification) => (
                     <div
                       key={notification.id}
@@ -205,10 +206,9 @@ const Header = () => {
             <MenuButton className="flex rounded-full text-sm focus:outline-none">
               <span className="sr-only">Open user menu</span>
               <div className="bg-[#092043] w-10 h-10 text-lg font-semibold text-white text-center p-2 rounded-full mx-4 my-2 flex items-center justify-center">
-                {/* {userData?.firstName && userData?.lastName
+                {userData?.firstName && userData?.lastName
                   ? `${userData.firstName[0]}${userData.lastName[0]}`.toUpperCase()
-                  : "SS"} */}
-                SS
+                  : "SS"}
               </div>
             </MenuButton>
           </div>
@@ -223,10 +223,7 @@ const Header = () => {
           >
             <MenuItems className="absolute right-0 z-50 mt-2 w-[300px] origin-top-right rounded-md bg-white py-1 shadow-lg focus:outline-none font-primaryRegular">
               <MenuItem>
-                <Link
-                  to="/profile"
-                  className="block px-4 py-2 text-sm"
-                >
+                <Link to="/profile" className="block px-4 py-2 text-sm">
                   <div className="flex items-center gap-2 text-base">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"

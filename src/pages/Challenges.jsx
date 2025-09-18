@@ -86,22 +86,23 @@ const Challenges = () => {
     }
   };
 
-  // const fetchCategories = async () => {
-  //   const res = await axios.get(`${apiURL}/content/challenge`, {
+  // const fetchChallenges = async () => {
+  //   const res = await axios.get(`${apiURL}/content/challenges`, {
   //     headers: {
   //       Authorization: `Bearer ${token}`,
   //       "Content-Type": "application/json",
   //     },
-  //   });a
-  //   console.log("Challenges from API:", res.data);
+  //   });
+  //   console.log("Categories from API:", res.data);
   //   return res.data;
   // };
 
-  // const { data: challengess = [] } = useQuery({
+  // const { data: challenges1 = [] } = useQuery({
   //   queryKey: ["challenges"],
-  //   queryFn: fetchCategories,
+  //   queryFn: fetchChallenges,
   //   staleTime: 5 * 60 * 1000, // 5 minutes
   // });
+
   return (
     <div className="bg-[#F5F7FA] min-h-[calc(100vh-80px)] relative">
       {/* Decorative Elements */}

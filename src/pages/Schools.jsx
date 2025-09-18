@@ -12,6 +12,7 @@ import {
   Users,
   User,
   HelpCircle,
+  GraduationCap,
 } from "lucide-react";
 import { Card } from "../components/ui/card";
 import SchoolOnboardingModal from "../components/modals/SchoolOnboardingModal";
@@ -80,6 +81,28 @@ const Schools = () => {
   const indexOfFirstUser = indexOfLastUser - itemsPerPage;
   const currentSchools = schools.slice(indexOfFirstUser, indexOfLastUser);
   const totalPages = Math.ceil(schools.length / itemsPerPage);
+
+  const EmptyState = () => (
+    <div className="flex flex-col items-center justify-center py-16 px-4">
+      <div className="w-32 h-32 bg-[#1A73E8]/10 rounded-full flex items-center justify-center mb-6">
+        <GraduationCap className="w-16 h-16 text-[#1A73E8]" />
+      </div>
+      <h3 className="text-2xl font-bold text-[#0F1419] mb-2">
+        No Schools Onboarded
+      </h3>
+      <p className="text-gray-500 text-center mb-8 max-w-md">
+        Get started by onboarding your first school to the SkillSeed platform.
+        You can manage all school information and activities from here.
+      </p>
+      <button
+        onClick={handleOpenOnboardingModal}
+        className="flex items-center bg-[#FFC107] text-[#0F1419] px-8 py-4 rounded-full font-semibold hover:bg-[#FFC107]/90 cursor-pointer shadow-lg"
+      >
+        <Plus className="w-5 h-5 mr-2" />
+        Onboard Your First School
+      </button>
+    </div>
+  );
   return (
     <div className="bg-[#F5F7FA] min-h-[calc(100vh-80px)] relative">
       {/* Decorative Bubbles */}
@@ -150,6 +173,8 @@ const Schools = () => {
               <SkeletonCard key={i} />
             ))}
           </div>
+        ) : schools.length === 0 ? (
+          <EmptyState />
         ) : (
           <>
             {/* Schools Content */}
@@ -223,9 +248,9 @@ const Schools = () => {
                         >
                           <Eye className="w-4 h-4" />
                         </button>
-                        <button className="flex items-center justify-center rounded-full bg-[#FFC107] text-[#0F1419] w-10 h-10 hover:bg-[#FFC107]/80">
+                        {/* <button className="flex items-center justify-center rounded-full bg-[#FFC107] text-[#0F1419] w-10 h-10 hover:bg-[#FFC107]/80">
                           <Pen className="w-4 h-4" />
-                        </button>
+                        </button> */}
                       </div>
                     </Card>
                   ))}
@@ -345,16 +370,16 @@ const Schools = () => {
                       </div>
                     </td> */}
                         <td className="px-6 py-4">
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center justify-center">
                             <button
                               onClick={() => handleViewSchool(school._id)}
                               className="flex items-center justify-center rounded-full bg-[#1A73E8] text-white w-8 h-8 hover:bg-[#1A73E8]/90"
                             >
                               <Eye className="w-3 h-3" />
                             </button>
-                            <button className="flex items-center justify-center rounded-full bg-[#FFC107] text-[#0F1419] w-8 h-8 hover:bg-[#FFC107]/80">
+                            {/* <button className="flex items-center justify-center rounded-full bg-[#FFC107] text-[#0F1419] w-8 h-8 hover:bg-[#FFC107]/80">
                               <Pen className="w-3 h-3" />
-                            </button>
+                            </button> */}
                           </div>
                         </td>
                       </tr>

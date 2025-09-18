@@ -17,6 +17,12 @@ import {
 import PaymentModal from "../components/modals/PaymentModal";
 import moment from "moment";
 
+const exchangeRates = {
+  USD: 1,
+  EUR: 1.08,
+  RF: 0.00078,
+};
+
 const Transactions = () => {
   const apiURL = import.meta.env.VITE_REACT_APP_BASE_URL;
   const token = localStorage.getItem("adminToken");
@@ -211,6 +217,14 @@ const Transactions = () => {
     };
   }, [transactions]);
 
+  const baseCurrency = "USD";
+
+  const totalRevenue = transactions.reduce((sum, trx) => {
+    const rate = exchangeRates[trx.currency] || 1;
+    return sum + (trx.amount || 0) * rate;
+  }, 0);
+
+
   return (
     <div className="bg-[#F5F7FA] min-h-[calc(100vh-80px)]">
       <div id="main-content" className=" p-6 md:p-8 w-full max-w-[1800px]">
@@ -259,17 +273,19 @@ const Transactions = () => {
               <div className="bg-[#3C91BA]/25 p-3 rounded-full">
                 <DollarSign className="text-[#3C91BA] w-6 h-6" />
               </div>
-              <span className="text-green-500 text-sm font-semibold">
+              {/* <span className="text-green-500 text-sm font-semibold">
                 +12.5%
-              </span>
+              </span> */}
             </div>
             <h3 className="text-2xl font-bold text-deep-navy">
-              $
-              {transactions
-                .reduce((sum, trx) => sum + (trx.amount || 0), 0)
-                .toLocaleString()}
+              {totalRevenue.toLocaleString("en-US", {
+                style: "currency",
+                currency: baseCurrency,
+              })}
             </h3>
-            <p className="text-gray-500 text-sm">Total Revenue</p>
+            <p className="text-gray-500 text-sm">
+              Total Revenue (in {baseCurrency})
+            </p>
           </div>
 
           {/* School Subscriptions Card */}
@@ -454,7 +470,7 @@ const Transactions = () => {
                           </span>
                         </td>
                         <td className="px-6 py-4 font-bold text-green-600">
-                          ${trx?.amount}
+                          {trx?.currency + "" + trx?.amount.toLocaleString()}
                         </td>
                         <td className="px-6 py-4 text-gray-600">
                           {trx?.numberOfKids}
@@ -581,14 +597,6 @@ const Transactions = () => {
         </div>
       </div>
       {/* Payment Modal */}
-      {/* <AddPaymentModal
-        isOpen={showPaymentModal}
-        onClose={() => setShowPaymentModal(false)}
-      />
-      <RenewPaymentModal
-        isOpen={showRenewPaymentModal}
-        onClose={() => setShowRenewPaymentModal(false)}
-      /> */}
       <PaymentModal
         isOpen={showPaymentModal}
         onClose={() => {

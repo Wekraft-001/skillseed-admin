@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { User, Mail, Lock, Star, Rocket } from "lucide-react";
 import { IoIosEye, IoIosEyeOff } from "react-icons/io";
 import { useAuth } from "../context/AuthContext";
+import Logo from "../assets/logo.svg";
 
 const Signin = () => {
   const apiURL = import.meta.env.VITE_REACT_APP_BASE_URL;
@@ -52,9 +53,9 @@ const Signin = () => {
           {/* Header */}
           <div id="signup-header" className="text-center mb-8">
             <img
-              src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg"
+              src={Logo}
               alt="Welcome"
-              className="w-20 h-20 rounded-full mx-auto mb-4 border-4 border-[#FFC107]"
+              className="w-[100px] h-[100px] rounded-full mx-auto"
             />
             <h1 className="text-2xl font-bold text-[#0A1F44]">
               Skillseed Super Admin Login

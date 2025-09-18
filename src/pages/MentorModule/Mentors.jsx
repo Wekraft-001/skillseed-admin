@@ -88,7 +88,7 @@ const Mentors = () => {
         "Content-Type": "application/json",
       },
     });
-    // console.log(res.data);
+    console.log(res.data);
     return res.data;
   };
 
@@ -109,7 +109,7 @@ const Mentors = () => {
   const totalPages = Math.ceil(mentors.length / itemsPerPage);
 
   const handleViewMentor = (mentorId) => {
-    navigate("/mentors/mentor-details");
+    navigate(`/mentors/mentor-details/${mentorId}`);
   };
   const handleViewCredentails = (mentorId) => {
     navigate("/mentors/credentials");
@@ -374,6 +374,7 @@ const Mentors = () => {
           )}
         </div>
 
+        {/* Main table showing */}
         <div className="relative z-10">
           {isLoading ? (
             <div className="bg-white rounded-xl shadow p-4">
@@ -387,7 +388,29 @@ const Mentors = () => {
             </div>
           ) : isError ? (
             <div className="text-red-500">Error: {error?.message}</div>
+          ) : mentors.length === 0 ? (
+            // Empty State Component
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-12 text-center">
+              <div className="w-24 h-24 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
+                <Users className="w-12 h-12 text-gray-400" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                No Mentors Found
+              </h3>
+              <p className="text-gray-500 mb-6 max-w-md mx-auto">
+                There are currently no mentors in the system. Start building
+                your mentorship program by adding your first mentor.
+              </p>
+              <button
+                className="flex items-center mx-auto bg-yellow-400 text-gray-900 px-6 py-3 rounded-full font-semibold hover:bg-yellow-400/90 transition-colors"
+                onClick={() => setIsModalOpen(true)}
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Add First Mentor
+              </button>
+            </div>
           ) : (
+            // Existing table display logic
             <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-x-auto">
               <table className="min-w-full text-left">
                 <thead>
@@ -434,17 +457,16 @@ const Mentors = () => {
                         </span>
                       </td>
                       <td className="px-6 py-4 text-gray-700">
-                        {/* Replace with dynamic data if available */}4
+                        {mentor?.students.length}
                       </td>
                       <td className="px-6 py-4 text-gray-700">
                         <span className="flex items-center gap-1">
-                          <Star className="w-4 h-4 text-blue-600" />
-                          {/* Replace with dynamic data if available */}5
+                          <Star className="w-4 h-4 text-blue-600" />5
                         </span>
                       </td>
                       <td className="px-6 py-4 flex items-center justify-center gap-2">
                         <button
-                          onClick={() => handleViewMentor(mentor.id)}
+                          onClick={() => handleViewMentor(mentor._id)}
                           className="rounded-full bg-blue-600 text-white w-8 h-8 hover:bg-blue-600/90 flex items-center justify-center"
                         >
                           <Eye className="w-3 h-3" />
@@ -455,7 +477,7 @@ const Mentors = () => {
                 </tbody>
               </table>
 
-              {/* Pagination */}
+              {/* Pagination - only show if there are mentors */}
               <div className="p-3 md:p-6 flex flex-col-reverse md:flex-row justify-between items-center gap-4">
                 <p className="text-gray-500">
                   Showing {indexOfFirstUser + 1} to{" "}

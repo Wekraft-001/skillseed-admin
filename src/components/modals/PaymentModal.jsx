@@ -11,6 +11,7 @@ const PaymentModal = ({ isOpen, onClose, transaction = null }) => {
   const [selectedSchool, setSelectedSchool] = useState("");
   const [schoolId, setSchoolId] = useState("");
   const [amount, setAmount] = useState("");
+  const [currency, setCurrency] = useState("USD");
   const [numberOfKids, setNumberOfKids] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
   const [transactionType, setTransactionType] = useState("");
@@ -25,6 +26,7 @@ const PaymentModal = ({ isOpen, onClose, transaction = null }) => {
       );
       setSchoolId(transaction?.school?._id || "");
       setAmount(transaction?.amount?.toString() || "");
+      setCurrency(transaction?.currency || "USD");
       setNumberOfKids(transaction?.numberOfKids?.toString() || "");
       setPaymentMethod(transaction?.paymentMethod || "");
       setTransactionType(transaction?.transactionType || "subscription");
@@ -82,19 +84,31 @@ const PaymentModal = ({ isOpen, onClose, transaction = null }) => {
       return;
     }
 
-    const payload = {
-      schoolId,
-      amount: parseFloat(amount),
-      numberOfKids: parseInt(numberOfKids, 10) || 0,
-      paymentMethod,
-      transactionType,
-      notes,
-    };
+    const isRenew = Boolean(transaction);
+
+    const payload = isRenew
+      ? {
+          schoolId,
+          amount: parseFloat(amount),
+          currency,
+          numberOfKids: parseInt(numberOfKids, 10) || 0,
+          paymentMethod,
+          transactionType,
+          notes,
+        }
+      : {
+          schoolName: selectedSchool,
+          amount: parseFloat(amount),
+          currency,
+          numberOfKids: parseInt(numberOfKids, 10) || 0,
+          paymentMethod,
+          transactionType,
+          notes,
+        };
 
     try {
       setLoading(true);
-
-      const isRenew = Boolean(transaction);
+      // console.log(payload);
       const endpoint = transaction
         ? `${apiUrl}/transactions/renew`
         : `${apiUrl}/transactions/add-transaction`;
@@ -229,26 +243,48 @@ const PaymentModal = ({ isOpen, onClose, transaction = null }) => {
             ) : (
               // Use dropdown for new transaction
               <SchoolDropdown
-                value={selectedSchool}
-                onChange={(val, id) => {
-                  setSelectedSchool(val);
-                  setSchoolId(id);
+                value={schoolId}
+                // onChange={(val, id) => {
+                //   setSelectedSchool(val);
+                //   setSchoolId(id);
+                // }}
+                onChange={(schoolName, schoolId) => {
+                  setSelectedSchool(schoolName);
+                  setSchoolId(schoolId);
                 }}
               />
             )}
 
             <div>
               <label className="block text-sm font-semibold text-deep-navy mb-3">
-                Amount ($)
+                Amount
               </label>
-              <input
-                type="number"
-                step="0.01"
-                placeholder="0.00"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                className="w-full bg-soft-gray border-2 border-gray-200 rounded-2xl px-4 py-3 focus:outline-none focus:border-primary-blue transition"
-              />
+              <div className="flex gap-2">
+                <div className="flex-1">
+                  <input
+                    type="number"
+                    step="0.01"
+                    placeholder="0.00"
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                    className="w-full bg-soft-gray border-2 border-gray-200 rounded-2xl px-4 py-3 focus:outline-none focus:border-primary-blue transition"
+                  />
+                </div>
+                <div className="w-24">
+                  <select
+                    value={currency}
+                    onChange={(e) => setCurrency(e.target.value)}
+                    className="w-full bg-soft-gray border-2 border-gray-200 rounded-2xl px-3 py-3 focus:outline-none focus:border-primary-blue transition text-sm"
+                  >
+                    <option value="$">USD ($)</option>
+                    <option value="RF">RWF (RF)</option>
+                    <option value="KSh">KES (KSh)</option>
+                    <option value="DH">AED (DH)</option>
+                    <option value="€">EUR (€)</option>
+                    <option value="£">GBP (£)</option>
+                  </select>
+                </div>
+              </div>
             </div>
 
             <div>
@@ -276,8 +312,7 @@ const PaymentModal = ({ isOpen, onClose, transaction = null }) => {
               >
                 <option value="">Select Method</option>
                 <option value="card">Credit Card</option>
-                <option value="mobilemoneyrwanda">Mobile Money Rwanda</option>
-                <option value="mobile-money">Mobile Money</option>
+                <option value="mobilemoneyrwanda">Mobile Money</option>
               </select>
             </div>
           </div>

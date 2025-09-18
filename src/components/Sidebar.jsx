@@ -107,6 +107,11 @@ const Sidebar = () => {
       path: "/mentors",
     },
     {
+      icon: <Tag className="w-5 h-5 mr-2" />,
+      label: "Categories",
+      path: "/categories",
+    },
+    {
       icon: <Globe className="w-5 h-5 mr-2" />,
       label: "Communities",
       path: "/communities",
@@ -115,11 +120,6 @@ const Sidebar = () => {
       icon: <BarChart3 className="w-5 h-5 mr-2" />,
       label: "Transactions",
       path: "/transactions",
-    },
-    {
-      icon: <Tag className="w-5 h-5 mr-2" />,
-      label: "Categories",
-      path: "/categories",
     },
     {
       icon: <Trophy className="w-5 h-5 mr-2" />,
@@ -242,7 +242,7 @@ const Sidebar = () => {
     <>
       {/* Desktop sidebar - full width */}
       <div className={desktopSidebarClasses}>
-        <ScrollArea className="flex-1 h-[calc(100vh-16rem)]">
+        <ScrollArea className="flex-1 h-full">
           <div className="p-4 space-y-1">
             {navItems.map((item, index) => (
               <div

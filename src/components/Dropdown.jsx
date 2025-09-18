@@ -26,7 +26,7 @@ export const SchoolDropdown = ({ value, onChange }) => {
 
   const options = schools.map((school) => ({
     label: school.schoolName,
-    value: school.schoolName,
+    value: school._id,
   }));
 
   return (
@@ -38,7 +38,10 @@ export const SchoolDropdown = ({ value, onChange }) => {
         isLoading={isLoading}
         options={options}
         value={options.find((opt) => opt.value === value)}
-        onChange={(selectedOption) => onChange(selectedOption?.value)}
+        // onChange={(selectedOption) => onChange(selectedOption?.value)}
+        onChange={(selectedOption) => {
+          onChange(selectedOption?.label, selectedOption?.value);
+        }}
         placeholder="Select School"
         className="react-select-container"
         classNamePrefix="react-select"
@@ -49,7 +52,7 @@ export const SchoolDropdown = ({ value, onChange }) => {
 
 export const CategoriesDropdown = ({ value, onChange }) => {
   const fetchCategories = async () => {
-    const res = await axios.get(`${apiURL}/challenge-categories`, {
+    const res = await axios.get(`${apiURL}/dashboard/all-categories`, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
