@@ -24,6 +24,7 @@ import SchoolDetails from "./pages/SchoolDetails";
 import MentorCredentials from "./pages/MentorModule/MentorCredentials";
 import Categories from "./pages/Categories";
 import MentorCredentialsDetails from "./pages/MentorModule/MentorCredentialsDetails";
+import CommunityDetails from "./pages/CommunityDetails";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +43,7 @@ const App = () => (
                 element={<SchoolDetails />}
               />
               <Route path="communities" element={<Communities />} />
+              <Route path="/communities/:id" element={<CommunityDetails />} />
               <Route path="challenges" element={<Challenges />} />
               <Route path="mentors" element={<Mentors />} />
               <Route

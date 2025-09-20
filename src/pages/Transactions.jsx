@@ -224,7 +224,6 @@ const Transactions = () => {
     return sum + (trx.amount || 0) * rate;
   }, 0);
 
-
   return (
     <div className="bg-[#F5F7FA] min-h-[calc(100vh-80px)]">
       <div id="main-content" className=" p-6 md:p-8 w-full max-w-[1800px]">
@@ -520,7 +519,7 @@ const Transactions = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4 font-bold text-green-600">
-                          ${trx?.amount}
+                          {trx?.currency + " " + trx?.amount.toLocaleString()}
                         </td>
                         {/* <td className="px-6 py-4">
                           <span className="bg-primary-blue/10 text-primary-blue px-3 py-1 rounded-full text-xs font-medium">
