@@ -14,6 +14,7 @@ import {
   RotateCcw,
   Star,
   TrendingUp,
+  Users,
 } from "lucide-react";
 import {
   LineChart,
@@ -48,7 +49,7 @@ const Home = () => {
       },
     });
     console.log(res.data);
-    return res.data.dashboardResponse;
+    return res.data;
   };
 
   const {
@@ -96,7 +97,7 @@ const Home = () => {
                     Total Schools
                   </p>
                   <h3 className="text-2xl md:text-3xl font-bold text-[#0F1419]">
-                    {dashboardData?.analytics?.totalSchools || 0}
+                    {dashboardData?.summary?.totalSchools || 0}
                   </h3>
                 </div>
                 <div className="bg-[#1A73E8]/10 p-3 md:p-4 rounded-full">
@@ -112,14 +113,17 @@ const Home = () => {
               <div className="flex justify-between items-center">
                 <div>
                   <p className="text-gray-500 text-sm md:text-base">
-                    Total Students
+                    Total Users
                   </p>
                   <h3 className="text-2xl md:text-3xl font-bold text-[#0F1419]">
-                    {dashboardData?.analytics?.totalStudents || 0}
+                    {dashboardData?.summary?.totalUsers || 0}
                   </h3>
                 </div>
-                <div className="bg-[#FFC107]/10 p-3 md:p-4 rounded-full">
+                {/* <div className="bg-[#FFC107]/10 p-3 md:p-4 rounded-full">
                   <GraduationCap className="text-xl md:text-2xl text-[#FFC107] w-6 h-6 md:w-8 md:h-8" />
+                </div> */}
+                <div className="bg-[#FFC107]/10 p-3 md:p-4 rounded-full">
+                  <Users className="text-xl md:text-2xl text-[#FFC107] w-6 h-6 md:w-8 md:h-8" />
                 </div>
               </div>
             </Card>
@@ -134,7 +138,7 @@ const Home = () => {
                     Active Challenges
                   </p>
                   <h3 className="text-2xl md:text-3xl font-bold text-[#0F1419]">
-                    0
+                    10
                   </h3>
                 </div>
                 <div className="bg-[#1A73E8]/10 p-3 md:p-4 rounded-full">
