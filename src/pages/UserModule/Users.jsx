@@ -1,4 +1,7 @@
 import React, { useState, useMemo } from "react";
+import axios from "axios";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import {
   Search,
   Plus,
@@ -10,18 +13,21 @@ import {
   Eye,
   UserX,
   UserCheck,
+  AlertTriangle,
+  X,
 } from "lucide-react";
-import axios from "axios";
-import { useQuery } from "@tanstack/react-query";
 
 const UserManagement = () => {
   const apiURL = import.meta.env.VITE_REACT_APP_BASE_URL;
   const token = localStorage.getItem("adminToken");
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRole, setSelectedRole] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState("createdAt");
   const [sortOrder, setSortOrder] = useState("desc");
+  const [deleteModal, setDeleteModal] = useState({ isOpen: false, user: null });
   const usersPerPage = 10;
 
   const fetchUsers = async () => {
@@ -31,7 +37,7 @@ const UserManagement = () => {
         "Content-Type": "application/json",
       },
     });
-    console.log(res.data, "users");
+    // console.log(res.data, "users");
     return res.data.filter(
       (user) => user?.role?.toLowerCase() !== "super_admin"
     );
@@ -47,6 +53,46 @@ const UserManagement = () => {
     queryFn: fetchUsers,
     staleTime: 5 * 60 * 1000,
   });
+
+  // Delete user mutation
+  const deleteUserMutation = useMutation({
+    mutationFn: async (userId) => {
+      const res = await axios.delete(`${apiURL}/dashboard/user/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      setDeleteModal({ isOpen: false, user: null });
+      alert("User deleted successfully!");
+    },
+    onError: (error) => {
+      console.error("Error deleting user:", error);
+      alert(error.response?.data?.message || "Failed to delete user");
+    },
+  });
+
+  const handleDeleteClick = (user) => {
+    // Don't open modal for students
+    if (user.role === "student") {
+      return;
+    }
+    setDeleteModal({ isOpen: true, user });
+  };
+
+  const handleDeleteConfirm = () => {
+    if (deleteModal.user) {
+      deleteUserMutation.mutate(deleteModal.user._id);
+    }
+  };
+
+  const handleViewUser = (userId) => {
+    navigate(`/users/user-details/${userId}`);
+  };
 
   const getRoleBadgeColor = (role) => {
     const colors = {
@@ -141,16 +187,6 @@ const UserManagement = () => {
                 Manage and monitor all platform users
               </p>
             </div>
-            {/* <div className="flex items-center gap-3">
-              <button className="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
-                <Filter className="w-4 h-4 mr-2" />
-                Export
-              </button>
-              <button className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
-                <Plus className="w-4 h-4 mr-2" />
-                Add User
-              </button>
-            </div> */}
           </div>
         </div>
       </div>
@@ -199,20 +235,6 @@ const UserManagement = () => {
               </div>
             </div>
           </div>
-
-          {/* <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Admins</p>
-                <p className="text-3xl font-bold text-gray-900">
-                  {roleStats.admin || 0}
-                </p>
-              </div>
-              <div className="p-3 bg-amber-100 rounded-lg">
-                <UserX className="w-6 h-6 text-amber-600" />
-              </div>
-            </div>
-          </div> */}
         </div>
 
         {/* Filters and Search */}
@@ -240,7 +262,6 @@ const UserManagement = () => {
                   <option value="all">All Roles</option>
                   <option value="student">Students</option>
                   <option value="parent">Parents</option>
-                  {/* <option value="admin">Admins</option> */}
                 </select>
                 <select
                   value={`${sortBy}-${sortOrder}`}
@@ -332,10 +353,26 @@ const UserManagement = () => {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-center gap-2">
-                        <button className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                        <button
+                          onClick={() => handleViewUser(user._id)}
+                          className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        >
                           <Eye className="w-4 h-4" />
                         </button>
-                        <button className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                        <button
+                          onClick={() => handleDeleteClick(user)}
+                          disabled={user.role === "student"}
+                          className={`p-2 rounded-lg transition-colors ${
+                            user.role === "student"
+                              ? "text-gray-300 cursor-not-allowed"
+                              : "text-gray-400 hover:text-red-600 hover:bg-red-50"
+                          }`}
+                          title={
+                            user.role === "student"
+                              ? "Students cannot be deleted"
+                              : "Delete user"
+                          }
+                        >
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
@@ -424,6 +461,57 @@ const UserManagement = () => {
           </div>
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {deleteModal.isOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-xl max-w-md w-full">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-red-100 rounded-lg">
+                    <AlertTriangle className="w-6 h-6 text-red-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Delete User
+                  </h3>
+                </div>
+                <button
+                  onClick={() => setDeleteModal({ isOpen: false, user: null })}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <p className="text-gray-600 mb-6">
+                Are you sure you want to delete{" "}
+                <span className="font-semibold text-gray-900">
+                  {deleteModal.user?.firstName} {deleteModal.user?.lastName}
+                </span>
+                ? This action cannot be undone.
+              </p>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setDeleteModal({ isOpen: false, user: null })}
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                  disabled={deleteUserMutation.isPending}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDeleteConfirm}
+                  disabled={deleteUserMutation.isPending}
+                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {deleteUserMutation.isPending ? "Deleting..." : "Delete"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

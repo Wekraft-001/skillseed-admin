@@ -5,7 +5,8 @@ import { SidebarProvider } from "./context/SidebarContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Layout from "./components/Layout";
 import Home from "./pages/Home";
-import UserManagager from "./pages/UserManager";
+import UserManagement from "./pages/UserModule/Users";
+import UserDetailsPage from "./pages/UserModule/UserDetails";
 import Schools from "./pages/Schools";
 import Challenges from "./pages/Challenges";
 import Settings from "./pages/Settings";
@@ -36,7 +37,11 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Layout />}>
               <Route path="home" element={<Home />} />
-              <Route path="users" element={<UserManagager />} />
+              <Route path="users" element={<UserManagement />} />
+              <Route
+                path="users/user-details/:userId"
+                element={<UserDetailsPage />}
+              />
               <Route path="schools" element={<Schools />} />
               <Route
                 path="schools/school-details/:schoolId"

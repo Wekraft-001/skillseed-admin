@@ -9,6 +9,7 @@ import {
   Plus,
   Search,
   Filter,
+  CalendarRange,
 } from "lucide-react";
 import { Card } from "../components/ui/card";
 import ChallengeCreationModal from "../components/modals/ChallengeCreationModal";
@@ -18,47 +19,47 @@ const Challenges = () => {
   const token = localStorage.getItem("adminToken");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
-  const challenges = [
-    {
-      id: 1,
-      title: "Mathematics Challenge 2024",
-      description:
-        "Test your mathematical skills in this comprehensive challenge covering algebra, geometry, and calculus.",
-      participants: 245,
-      duration: "2 hours",
-      difficulty: "Advanced",
-      status: "Active",
-      prize: "$500",
-      category: "Mathematics",
-      endDate: "2024-12-15",
-    },
-    {
-      id: 2,
-      title: "Science Innovation Contest",
-      description:
-        "Showcase your scientific knowledge and innovation in this exciting multi-disciplinary challenge.",
-      participants: 189,
-      duration: "3 hours",
-      difficulty: "Intermediate",
-      status: "Coming Soon",
-      prize: "$750",
-      category: "Science",
-      endDate: "2024-12-20",
-    },
-    {
-      id: 3,
-      title: "Creative Writing Challenge",
-      description:
-        "Express your creativity through storytelling and win amazing prizes in this writing competition.",
-      participants: 312,
-      duration: "1.5 hours",
-      difficulty: "Beginner",
-      status: "Active",
-      prize: "$300",
-      category: "Literature",
-      endDate: "2024-12-10",
-    },
-  ];
+  // const challenges = [
+  //   {
+  //     id: 1,
+  //     title: "Mathematics Challenge 2024",
+  //     description:
+  //       "Test your mathematical skills in this comprehensive challenge covering algebra, geometry, and calculus.",
+  //     participants: 245,
+  //     duration: "2 hours",
+  //     difficulty: "Advanced",
+  //     status: "Active",
+  //     prize: "$500",
+  //     category: "Mathematics",
+  //     endDate: "2024-12-15",
+  //   },
+  //   {
+  //     id: 2,
+  //     title: "Science Innovation Contest",
+  //     description:
+  //       "Showcase your scientific knowledge and innovation in this exciting multi-disciplinary challenge.",
+  //     participants: 189,
+  //     duration: "3 hours",
+  //     difficulty: "Intermediate",
+  //     status: "Coming Soon",
+  //     prize: "$750",
+  //     category: "Science",
+  //     endDate: "2024-12-20",
+  //   },
+  //   {
+  //     id: 3,
+  //     title: "Creative Writing Challenge",
+  //     description:
+  //       "Express your creativity through storytelling and win amazing prizes in this writing competition.",
+  //     participants: 312,
+  //     duration: "1.5 hours",
+  //     difficulty: "Beginner",
+  //     status: "Active",
+  //     prize: "$300",
+  //     category: "Literature",
+  //     endDate: "2024-12-10",
+  //   },
+  // ];
 
   const getDifficultyColor = (difficulty) => {
     switch (difficulty) {
@@ -86,23 +87,31 @@ const Challenges = () => {
     }
   };
 
-  // const fetchChallenges = async () => {
-  //   const res = await axios.get(`${apiURL}/content/challenges`, {
-  //     headers: {
-  //       Authorization: `Bearer ${token}`,
-  //       "Content-Type": "application/json",
-  //     },
-  //   });
-  //   console.log("Categories from API:", res.data);
-  //   return res.data;
-  // };
+  const fetchChallenges = async () => {
+    const res = await axios.get(`${apiURL}/content/challenges/admin/list`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    console.log("Challenges from API:", res.data);
+    return res.data;
+  };
 
-  // const { data: challenges1 = [] } = useQuery({
-  //   queryKey: ["challenges"],
-  //   queryFn: fetchChallenges,
-  //   staleTime: 5 * 60 * 1000, // 5 minutes
-  // });
+  const { data: challenges = [] } = useQuery({
+    queryKey: ["challenges"],
+    queryFn: fetchChallenges,
+    staleTime: 5 * 60 * 1000,
+  });
 
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+  
   return (
     <div className="bg-[#F5F7FA] min-h-[calc(100vh-80px)] relative">
       {/* Decorative Elements */}
@@ -160,7 +169,7 @@ const Challenges = () => {
                 <div className="flex items-center gap-2">
                   <Trophy className="w-5 h-5 text-[#FFC107]" />
                   <span className="text-sm font-medium text-gray-600">
-                    {challenge.category}
+                    {challenge?.categoryId?.name}
                   </span>
                 </div>
                 {/* <span
@@ -182,28 +191,28 @@ const Challenges = () => {
               <div className="space-y-3 mb-6">
                 <div className="flex items-center gap-2 text-sm text-gray-600">
                   <Users className="w-4 h-4 text-[#1A73E8]" />
-                  <span>{challenge.participants} participants</span>
+                  <span>{challenge?.totalSubmissions} participants</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-gray-600">
                   <Clock className="w-4 h-4 text-[#1A73E8]" />
-                  <span>{challenge.duration}</span>
+                  <span>{challenge?.estimatedTime} Minutes</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <Target className="w-4 h-4 text-[#1A73E8]" />
-                  <span>Prize: {challenge.prize}</span>
+                  <CalendarRange className="w-4 h-4 text-[#1A73E8]" />
+                  <span>Age Range: {challenge?.ageRange}</span>
                 </div>
               </div>
 
               <div className="flex items-center justify-between mb-4">
                 <span
                   className={`text-xs px-3 py-1 rounded-full font-medium ${getDifficultyColor(
-                    challenge.difficulty
+                    challenge.difficultyLevel
                   )}`}
                 >
-                  {challenge.difficulty}
+                  {challenge.difficultyLevel}
                 </span>
                 <span className="text-xs text-gray-500">
-                  Ends: {challenge.endDate}
+                  Date: {formatDate(challenge.createdAt)}
                 </span>
               </div>
 
@@ -224,14 +233,14 @@ const Challenges = () => {
         </div>
 
         {/* Stats Section */}
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card className="bg-gradient-to-br from-[#1A73E8] to-[#1A73E8]/80 text-white p-6 rounded-2xl">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-white/20 rounded-full">
                 <Trophy className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="text-2xl font-bold">24</h3>
+                <h3 className="text-2xl font-bold">{challenges.length}</h3>
                 <p className="text-white/80">Active Challenges</p>
               </div>
             </div>
@@ -243,13 +252,13 @@ const Challenges = () => {
                 <Users className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="text-2xl font-bold">1,246</h3>
+                <h3 className="text-2xl font-bold">0</h3>
                 <p className="text-[#0F1419]/80">Total Participants</p>
               </div>
             </div>
           </Card>
 
-          <Card className="bg-gradient-to-br from-green-500 to-green-600 text-white p-6 rounded-2xl">
+          {/* <Card className="bg-gradient-to-br from-green-500 to-green-600 text-white p-6 rounded-2xl">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-white/20 rounded-full">
                 <Target className="w-6 h-6" />
@@ -259,7 +268,7 @@ const Challenges = () => {
                 <p className="text-white/80">Total Prizes</p>
               </div>
             </div>
-          </Card>
+          </Card> */}
         </div>
       </div>
 

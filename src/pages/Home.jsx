@@ -138,7 +138,7 @@ const Home = () => {
                     Active Challenges
                   </p>
                   <h3 className="text-2xl md:text-3xl font-bold text-[#0F1419]">
-                    10
+                  {dashboardData?.summary?.totalChallenges || 0}
                   </h3>
                 </div>
                 <div className="bg-[#1A73E8]/10 p-3 md:p-4 rounded-full">
